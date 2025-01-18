@@ -1,0 +1,23 @@
+{
+  "name": "query-state",
+  "version": "1.0.0",
+  "description": "Handle URL Query State Parameters better",
+  "keywords": [
+    "url",
+    "query",
+    "query-parameters",
+    "query-state",
+    "state"
+  ],
+  "license": "ISC",
+  "author": "Fernando",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "vitest"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.3",
+    "vitest": "^3.0.2"
+  }
+}

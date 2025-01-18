@@ -1,0 +1,15 @@
+{
+  "compilerOptions": {
+    "esModuleInterop": true,
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Bundler", // important to avoid problems import files without .ts extension
+    "outDir": "dist",
+    "types": ["vitest/globals"]
+    /* "paths": {
+      "@/src/*: ["./src/*"]
+    }*/
+  },
+  "include": ["src/**/*", "__tests__"],
+  "exclude": ["dist"]
+}
