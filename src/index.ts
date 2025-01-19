@@ -1,9 +1,11 @@
 type URLSearchParamsProps = ConstructorParameters<typeof URLSearchParams>[number];
 
-type Props<TValue extends string> = {
+type Props<TValue extends string, TValidation = string> = {
   name: string;
   values: ReadonlyArray<TValue>;
   defaultValue: Readonly<TValue>;
+  get?(searchParams: URLSearchParams): TValidation;
+  set?(searchParams: URLSearchParams, value?: TValue): URLSearchParams;
 };
 
 type Id<TValue extends string> = {
@@ -16,8 +18,14 @@ type BuildComposedProps<TKey extends string, TId extends string, TValue extends 
   ids: Record<TId, Id<TValue>>;
 };
 
-export class URLStateHandler<TValue extends string> {
-  private constructor(private props: Props<TValue>) {
+type WithCustomValidationProps<T = string> = {
+  name: string;
+  getState?: (urlSearchParams: URLSearchParams) => T;
+  setState?(urlSearchParams: URLSearchParams, value?: string): URLSearchParams;
+};
+
+export class URLStateHandler<TValue extends string, TValidation = string> {
+  private constructor(private props: Props<TValue, TValidation>) {
     this.props = props;
   }
 
@@ -42,8 +50,22 @@ export class URLStateHandler<TValue extends string> {
     return all;
   }
 
+  static withCustomValidation<T>(props: WithCustomValidationProps<T>) {
+    return new URLStateHandler<string, T>({
+      name: props.name,
+      values: [],
+      defaultValue: "",
+      get: props.getState,
+      set: props.setState,
+    });
+  }
+
   getState(searchParamsProps: URLSearchParamsProps) {
     const urlSearchParams = new URLSearchParams(searchParamsProps);
+
+    if (this.props.get) {
+      return this.props.get(urlSearchParams);
+    }
 
     const queryFound = urlSearchParams.get(this.props.name);
 
@@ -66,6 +88,10 @@ export class URLStateHandler<TValue extends string> {
 
   setState(url: URLSearchParamsProps, value?: Readonly<TValue>) {
     const urlSearchParams = new URLSearchParams(url);
+
+    if (this.props.set) {
+      return this.props.set(urlSearchParams, value).toString();
+    }
 
     if (!value) {
       urlSearchParams.set(this.props.name, this.props.defaultValue.toString());

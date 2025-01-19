@@ -131,4 +131,39 @@ describe("On URLStateHandler", () => {
 
     expect(new URLSearchParams(state).get("form.chks")).toEqual("x");
   });
+
+  it("withCustomValidation constructor", async () => {
+    const myUrl = `https://www.custom-url.com/path?year=2010`;
+    const searchParams = new URL(myUrl).search;
+
+    const formUrlStateHandler = URLStateHandler.withCustomValidation({
+      name: "year",
+      getState(urlSearchParams) {
+        const yearString = urlSearchParams.get("year");
+        const year = parseInt(yearString);
+        const currentYear = new Date().getFullYear();
+
+        if (isNaN(year) || year > currentYear) return currentYear;
+
+        return year;
+      },
+      setState(urlSearchParams, v) {
+        const year = parseInt(v);
+
+        if (!year || isNaN(year)) {
+          urlSearchParams.set("year", new Date().getFullYear().toString());
+          return urlSearchParams;
+        }
+
+        urlSearchParams.set("year", v);
+        return urlSearchParams;
+      },
+    });
+
+    const setState = formUrlStateHandler.setState(searchParams, "2010");
+    const getState = formUrlStateHandler.getState(searchParams);
+
+    expect(setState).toEqual("year=2010");
+    expect(getState).toEqual(2010);
+  });
 });
