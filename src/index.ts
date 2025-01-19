@@ -6,17 +6,14 @@ type Props<TValue extends string> = {
   defaultValue: Readonly<TValue>;
 };
 
-type Id<TId extends string, TValue extends string> = Record<
-  TId,
-  {
-    values: ReadonlyArray<TValue>;
-    defaultValue: Readonly<TValue>;
-  }
->;
+type Id<TValue extends string> = {
+  values: ReadonlyArray<TValue>;
+  defaultValue: Readonly<TValue>;
+};
 
 type BuildComposedProps<TKey extends string, TId extends string, TValue extends string> = {
   key: TKey;
-  ids: Id<TId, TValue>;
+  ids: Record<TId, Id<TValue>>;
 };
 
 export class URLStateHandler<TValue extends string> {
@@ -28,22 +25,21 @@ export class URLStateHandler<TValue extends string> {
     return new URLStateHandler(props);
   }
 
-  static buildComposed<TKey extends string, TId extends string>({
+  static buildComposed<TKey extends string, TId extends string, TValue extends string>({
     key,
     ids,
-  }: BuildComposedProps<TKey, TId, TId[number]>): Record<TId, URLStateHandler<TId[number]>> {
-    const all = Object.keys(ids).map((name) => {
-      return [
-        `${name}` as keyof typeof ids,
-        new URLStateHandler({
-          name: `${key}.${name}`,
-          values: ids[name].values,
-          defaultValue: ids[name].defaultValue,
-        }),
-      ];
+  }: BuildComposedProps<TKey, TId, TValue>): Record<TId, URLStateHandler<TValue>> {
+    const all = {} as Record<TId, URLStateHandler<TValue>>;
+
+    Object.entries<Id<TValue>>(ids).forEach(([name, id]) => {
+      all[name] = new URLStateHandler({
+        name: `${key}.${name}`,
+        values: ids[name].values,
+        defaultValue: ids[name].defaultValue,
+      });
     });
 
-    return Object.fromEntries(all);
+    return all;
   }
 
   getState(searchParamsProps: URLSearchParamsProps) {
@@ -72,6 +68,11 @@ export class URLStateHandler<TValue extends string> {
     const urlSearchParams = new URLSearchParams(url);
 
     if (!value) {
+      urlSearchParams.set(this.props.name, this.props.defaultValue.toString());
+      return urlSearchParams.toString();
+    }
+
+    if (!this.props.values.includes(value)) {
       urlSearchParams.set(this.props.name, this.props.defaultValue.toString());
       return urlSearchParams.toString();
     }

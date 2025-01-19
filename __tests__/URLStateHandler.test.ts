@@ -34,7 +34,22 @@ describe("On URLStateHandler", () => {
     expect(state).toEqual(urlSearchParams.toString());
   });
 
-  it.only("Set State", async () => {
+  it("Set invalid State will Set the default state", async () => {
+    const myUrl = "https://www.custom-url.com/path?form=a&form.input=c";
+    const searchParams = new URL(myUrl).search;
+
+    const formUrlStateHandler = URLStateHandler.build<string>({
+      name: "form",
+      values: ["a", "b", "c"],
+      defaultValue: "c",
+    });
+
+    const state = formUrlStateHandler.setState(searchParams, "z");
+
+    expect(new URLSearchParams(state).get("form")).toEqual("c");
+  });
+
+  it("buildComposed constructor", async () => {
     const checkValidValues = ["x", "y", "z"];
     const checkUrlValues = ["x", "y", "o"];
 
@@ -64,5 +79,56 @@ describe("On URLStateHandler", () => {
     };
 
     expect(state).toEqual(expect.arrayContaining(expectedResult()));
+  });
+
+  it("buildComposed constructor, getState", async () => {
+    const checkValidValues = ["x", "y", "z"];
+
+    const myUrl = `https://www.custom-url.com/path?form.inpt=a}`;
+    const searchParams = new URL(myUrl).search;
+
+    const formUrlStateHandler = URLStateHandler.buildComposed({
+      key: "form",
+      ids: {
+        inpt: {
+          defaultValue: "a",
+          values: ["a", "b", "c"],
+        },
+        chks: {
+          values: checkValidValues,
+          defaultValue: "x",
+        },
+      },
+    });
+
+    const state = formUrlStateHandler.chks.getState(searchParams);
+
+    expect(state).toEqual("x");
+  });
+
+  it("buildComposed constructor, setState", async () => {
+    const checkValidValues = ["x", "y", "z"];
+    const checkUrlValues = ["x", "y", "o"];
+
+    const myUrl = `https://www.custom-url.com/path?form.inpt=a&form.chks=${checkUrlValues.join(",")}`;
+    const searchParams = new URL(myUrl).search;
+
+    const formUrlStateHandler = URLStateHandler.buildComposed({
+      key: "form",
+      ids: {
+        inpt: {
+          defaultValue: "a",
+          values: ["a", "b", "c"],
+        },
+        chks: {
+          values: checkValidValues,
+          defaultValue: "x",
+        },
+      },
+    });
+
+    const state = formUrlStateHandler.chks.setState(searchParams, "m");
+
+    expect(new URLSearchParams(state).get("form.chks")).toEqual("x");
   });
 });
