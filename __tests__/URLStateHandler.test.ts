@@ -50,7 +50,7 @@ describe("On URLStateHandler", () => {
   });
 
   it("buildComposed constructor", async () => {
-    const checkValidValues = ["x", "y", "z"];
+    const checkValidValues = ["x", "y", "z"] as const;
     const checkUrlValues = ["x", "y", "o"];
 
     const myUrl = `https://www.custom-url.com/path?form.inpt=a&form.chks=${checkUrlValues.join(",")}`;
@@ -60,11 +60,11 @@ describe("On URLStateHandler", () => {
       key: "form",
       ids: {
         inpt: {
-          defaultValue: "a",
           values: ["a", "b", "c"],
+          defaultValue: "a",
         },
         chks: {
-          values: checkValidValues,
+          values: ["x", "y", "z"],
           defaultValue: "x",
         },
       },
@@ -82,8 +82,6 @@ describe("On URLStateHandler", () => {
   });
 
   it("buildComposed constructor, getState", async () => {
-    const checkValidValues = ["x", "y", "z"];
-
     const myUrl = `https://www.custom-url.com/path?form.inpt=a}`;
     const searchParams = new URL(myUrl).search;
 
@@ -95,7 +93,7 @@ describe("On URLStateHandler", () => {
           values: ["a", "b", "c"],
         },
         chks: {
-          values: checkValidValues,
+          values: ["x", "y", "z"],
           defaultValue: "x",
         },
       },
@@ -136,16 +134,16 @@ describe("On URLStateHandler", () => {
     const myUrl = `https://www.custom-url.com/path?year=2010`;
     const searchParams = new URL(myUrl).search;
 
-    const formUrlStateHandler = URLStateHandler.withCustomValidation({
+    const formUrlStateHandler = URLStateHandler.customValidation({
       name: "year",
       getState(urlSearchParams) {
         const yearString = urlSearchParams.get("year");
         const year = parseInt(yearString);
         const currentYear = new Date().getFullYear();
 
-        if (isNaN(year) || year > currentYear) return currentYear;
+        if (isNaN(year) || year > currentYear) return currentYear.toString();
 
-        return year;
+        return year.toString();
       },
       setState(urlSearchParams, v) {
         const year = parseInt(v);
@@ -164,6 +162,6 @@ describe("On URLStateHandler", () => {
     const getState = formUrlStateHandler.getState(searchParams);
 
     expect(setState).toEqual("year=2010");
-    expect(getState).toEqual(2010);
+    expect(getState).toEqual("2010");
   });
 });

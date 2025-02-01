@@ -1,46 +1,29 @@
-type URLSearchParamsProps = ConstructorParameters<typeof URLSearchParams>[number];
+import {
+  BuildComposedProps,
+  CustomValidationProps,
+  StaticBuildProps,
+  URLSearchParamsProps,
+  URLStateHandlerProps,
+  URLStateValues,
+} from "./types";
 
-type Props<TValue extends string, TValidation = string> = {
-  name: string;
-  values: ReadonlyArray<TValue>;
-  defaultValue: Readonly<TValue>;
-  get?(searchParams: URLSearchParams): TValidation;
-  set?(searchParams: URLSearchParams, value?: TValue): URLSearchParams;
-};
-
-type Id<TValue extends string> = {
-  values: ReadonlyArray<TValue>;
-  defaultValue: Readonly<TValue>;
-};
-
-type BuildComposedProps<TKey extends string, TId extends string, TValue extends string> = {
-  key: TKey;
-  ids: Record<TId, Id<TValue>>;
-};
-
-type WithCustomValidationProps<T = string> = {
-  name: string;
-  getState?: (urlSearchParams: URLSearchParams) => T;
-  setState?(urlSearchParams: URLSearchParams, value?: string): URLSearchParams;
-};
-
-export class URLStateHandler<TValue extends string, TValidation = string> {
-  private constructor(private props: Props<TValue, TValidation>) {
+export class URLStateHandler<TValue extends string> {
+  private constructor(private props: URLStateHandlerProps<TValue>) {
     this.props = props;
   }
 
-  static build<TValues extends string>(props: Props<TValues>) {
+  static build<TValues extends string>(props: StaticBuildProps<TValues>) {
     return new URLStateHandler(props);
   }
 
-  static buildComposed<TKey extends string, TId extends string, TValue extends string>({
-    key,
-    ids,
-  }: BuildComposedProps<TKey, TId, TValue>): Record<TId, URLStateHandler<TValue>> {
+  static buildComposed<TValue extends string, TKey extends string = string, TId extends string = string>(
+    props: BuildComposedProps<TKey, TId, TValue>
+  ): Record<TId, URLStateHandler<TValue>> {
+    const { key, ids } = props;
     const all = {} as Record<TId, URLStateHandler<TValue>>;
 
-    Object.entries<Id<TValue>>(ids).forEach(([name, id]) => {
-      all[name] = new URLStateHandler({
+    Object.entries<URLStateValues<TValue>>(ids).forEach(([name, id]) => {
+      all[name] = new URLStateHandler<TValue>({
         name: `${key}.${name}`,
         values: ids[name].values,
         defaultValue: ids[name].defaultValue,
@@ -50,17 +33,17 @@ export class URLStateHandler<TValue extends string, TValidation = string> {
     return all;
   }
 
-  static withCustomValidation<T>(props: WithCustomValidationProps<T>) {
-    return new URLStateHandler<string, T>({
+  static customValidation<T extends string>(props: CustomValidationProps<T>) {
+    return new URLStateHandler<T>({
       name: props.name,
-      values: [],
-      defaultValue: "",
+      values: [] as T[],
+      defaultValue: "" as T,
       get: props.getState,
       set: props.setState,
     });
   }
 
-  getState(searchParamsProps: URLSearchParamsProps) {
+  getState(searchParamsProps: URLSearchParamsProps): TValue | TValue[] {
     const urlSearchParams = new URLSearchParams(searchParamsProps);
 
     if (this.props.get) {
