@@ -12,7 +12,7 @@ export type URLStateHandlerProps<TValue extends string> = URLStateValues<TValue>
 
 export type StaticBuildProps<TValue extends string> = Omit<URLStateHandlerProps<TValue>, "get" | "set">;
 
-export type BuildComposedProps<TKey extends string, TId extends string, TValue extends Readonly<string>> = {
+export type ComposedBuildProps<TKey extends string, TId extends string, TValue extends Readonly<string>> = {
   key: TKey;
   ids: {
     [Key in TId]: URLStateValues<TValue>;
