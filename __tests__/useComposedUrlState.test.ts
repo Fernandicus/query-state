@@ -19,6 +19,7 @@ describe("On useComposedUrlState", () => {
   });
 
   it("setState calls pushState and updates the state", async () => {
+    const now = Date.now().toString();
     const { result } = renderHook(() => {
       return useComposedUrlState({
         key: "table",
@@ -30,6 +31,12 @@ describe("On useComposedUrlState", () => {
           filter: {
             defaultValue: "john",
             values: ["john", "doe"],
+          },
+          from: {
+            type: "custom",
+            getState() {
+              return now;
+            },
           },
         },
       });
@@ -45,6 +52,7 @@ describe("On useComposedUrlState", () => {
     const [secondState] = result.current;
     expect(mockedPushState).toBeCalledTimes(1);
     expect(secondState.get("filter")).toEqual("doe");
+    expect(secondState.get("from")).toEqual(now);
   });
 
   it("setState calls pushState and updates the state", async () => {

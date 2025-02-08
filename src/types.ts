@@ -15,7 +15,9 @@ export type StaticBuildProps<TValue extends string> = Omit<URLStateHandlerProps<
 export type ComposedBuildProps<TKey extends string, TId extends string, TValue extends Readonly<string>> = {
   key: TKey;
   ids: {
-    [Key in TId]: URLStateValues<TValue>;
+    [Key in TId]:
+      | ({ type?: "simple" } & URLStateValues<TValue>)
+      | ({ type: "custom" } & Omit<CustomValidationProps<TValue>, "name">);
   };
 };
 

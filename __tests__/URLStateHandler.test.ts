@@ -81,6 +81,37 @@ describe("On URLStateHandler", () => {
     expect(state).toEqual(expect.arrayContaining(expectedResult()));
   });
 
+  it("buildComposed constructor with custom validation", async () => {
+    const checkValidValues = ["x", "y", "z"] as const;
+    const checkUrlValues = ["x", "y", "o"];
+
+    const myUrl = `https://www.custom-url.com/path?form.inpt=a&form.chks=${checkUrlValues.join(",")}`;
+    const searchParams = new URL(myUrl).search;
+
+    const formUrlStateHandler = URLStateHandler.buildComposed({
+      key: "form",
+      ids: {
+        inpt: {
+          type: "custom",
+          getState() {
+            if (Math.random() > 1) return "b";
+            return "a";
+          },
+          setState() {
+            return new URLSearchParams();
+          },
+        },
+        chks: {
+          values: ["x", "y", "z"],
+          defaultValue: "x",
+        },
+      },
+    });
+
+    const state = formUrlStateHandler.inpt.getState(searchParams);
+    expect(state).toEqual("a");
+  });
+
   it("buildComposed constructor, getState", async () => {
     const myUrl = `https://www.custom-url.com/path?form.inpt=a}`;
     const searchParams = new URL(myUrl).search;

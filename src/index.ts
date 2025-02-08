@@ -22,11 +22,23 @@ export class URLStateHandler<TValue extends string> {
     const { key, ids } = props;
     const all = {} as Record<TId, URLStateHandler<TValue>>;
 
-    Object.entries<URLStateValues<TValue>>(ids).forEach(([name, id]) => {
+    Object.keys(ids).forEach((k) => {
+      const name = k as keyof typeof ids;
+      const id = ids[name];
+
+      if (id.type == "custom") {
+        all[name] = URLStateHandler.customValidation({
+          name: `${key}.${name}`,
+          getState: id.getState,
+          setState: id.setState,
+        });
+        return;
+      }
+
       all[name] = new URLStateHandler<TValue>({
         name: `${key}.${name}`,
-        values: ids[name].values,
-        defaultValue: ids[name].defaultValue,
+        values: id.values,
+        defaultValue: id.defaultValue,
       });
     });
 
