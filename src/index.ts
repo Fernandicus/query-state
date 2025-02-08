@@ -76,6 +76,11 @@ export class URLStateHandler<TValue extends string> {
       return this.props.set(urlSearchParams, value).toString();
     }
 
+    if (!value && !this.props.defaultValue) {
+      urlSearchParams.delete(this.props.name);
+      return urlSearchParams.toString();
+    }
+
     if (!value) {
       urlSearchParams.set(this.props.name, this.props.defaultValue.toString());
       return urlSearchParams.toString();
