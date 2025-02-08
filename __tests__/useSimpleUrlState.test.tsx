@@ -14,6 +14,10 @@ vi.spyOn(window, "history", "get").mockReturnValue({
 });
 
 describe("On useSimpleUrlState", () => {
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
+
   it("setState calls pushState and updates the state", async () => {
     const { result } = renderHook(() => {
       return useSimpleUrlState({
@@ -33,5 +37,26 @@ describe("On useSimpleUrlState", () => {
     const [secondState] = result.current;
     expect(mockedPushState).toBeCalledTimes(1);
     expect(secondState).toEqual("on");
+  });
+
+  it("set empty state sets the default state", async () => {
+    const { result } = renderHook(() => {
+      return useSimpleUrlState({
+        defaultValue: "off",
+        name: "state",
+        values: ["on", "off"],
+      });
+    });
+
+    const [firstState, setState] = result.current;
+    expect(firstState).toEqual("off");
+
+    act(() => {
+      setState("" as any);
+    });
+
+    const [secondState] = result.current;
+    expect(mockedPushState).toBeCalledTimes(1);
+    expect(secondState).toEqual("off");
   });
 });
