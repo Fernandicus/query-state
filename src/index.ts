@@ -1,3 +1,3 @@
 export * from "./useComposedUrlState";
-export * from "./useSimpleUrlState";
+export * from "./useUrlState";
 export * from "./URLStateHandler";

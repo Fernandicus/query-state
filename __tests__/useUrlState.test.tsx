@@ -1,5 +1,5 @@
 import { renderHook, act } from "@testing-library/react";
-import { useSimpleUrlState } from "../src/useSimpleUrlState";
+import { useUrlState } from "../src/useUrlState";
 
 const mockedPushState = vi.fn();
 
@@ -13,17 +13,20 @@ vi.spyOn(window, "history", "get").mockReturnValue({
   pushState: mockedPushState,
 });
 
-describe("On useSimpleUrlState", () => {
+describe("On useUrlState", () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   it("setState calls pushState and updates the state", async () => {
     const { result } = renderHook(() => {
-      return useSimpleUrlState({
-        defaultValue: "off",
-        name: "state",
-        values: ["on", "off"],
+      return useUrlState({
+        type: "simple",
+        params: {
+          defaultValue: "off",
+          name: "state",
+          values: ["on", "off"],
+        },
       });
     });
 
@@ -41,10 +44,13 @@ describe("On useSimpleUrlState", () => {
 
   it("set empty state sets the default state", async () => {
     const { result } = renderHook(() => {
-      return useSimpleUrlState({
-        defaultValue: "off",
-        name: "state",
-        values: ["on", "off"],
+      return useUrlState({
+        type: "simple",
+        params: {
+          defaultValue: "off",
+          name: "state",
+          values: ["on", "off"],
+        },
       });
     });
 
@@ -62,17 +68,19 @@ describe("On useSimpleUrlState", () => {
 
   it("type custom", async () => {
     const { result } = renderHook(() => {
-      return useSimpleUrlState<string>({
+      return useUrlState<string>({
         type: "custom",
-        name: "state",
-        getState(urlSearchParams) {
-          if (urlSearchParams.get("state") === null) return "off";
-        },
-        setState(urlSearchParams, value) {
-          if (value === "off") {
-            urlSearchParams.set("state", "");
-            return urlSearchParams;
-          }
+        params: {
+          name: "state",
+          getState(urlSearchParams) {
+            if (urlSearchParams.get("state") === null) return "off";
+          },
+          setState(urlSearchParams, value) {
+            if (value === "off") {
+              urlSearchParams.set("state", "");
+              return urlSearchParams;
+            }
+          },
         },
       });
     });

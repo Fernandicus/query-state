@@ -12,9 +12,9 @@ export type URLStateHandlerProps<TValue extends string> = URLStateValues<TValue>
 
 export type StaticBuildProps<TValue extends string> = Omit<URLStateHandlerProps<TValue>, "get" | "set">;
 
-export type UseSimpleUrlStateProps<TValue extends string> =
-  | ({ type?: "simple" } & Omit<URLStateHandlerProps<TValue>, "get" | "set">)
-  | ({ type: "custom" } & CustomValidationProps<TValue>);
+export type UseUrlStateProps<TValue extends string> =
+  | { type: "simple"; params: Omit<URLStateHandlerProps<TValue>, "get" | "set"> }
+  | { type: "custom"; params: CustomValidationProps<TValue> };
 
 export type ComposedBuildProps<TKey extends string, TId extends string, TValue extends Readonly<string>> = {
   key: TKey;

@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { URLStateHandler } from "./URLStateHandler";
 import { ComposedBuildProps } from "./types";
 
@@ -11,15 +11,19 @@ export function useComposedUrlState<TKey extends string, TId extends string, TVa
 ): Return<TId, TValue> {
   const [searchParams, setSearchParams] = useState(location.search);
 
+  useEffect(() => {
+    setSearchParams(location.search);
+  }, [location.search]);
+
   const urlStateHandler = useMemo(() => {
     return URLStateHandler.buildComposed(props);
-  }, [searchParams]);
+  }, []);
 
   const setState = useMemo(() => {
     return {
       set(k: TId, v: TValue) {
         const newState = urlStateHandler[k].setState(searchParams, v);
-        window.history.pushState({}, "", newState);
+        window.history.pushState({}, "", "?" + newState);
         setSearchParams(newState);
       },
     };
