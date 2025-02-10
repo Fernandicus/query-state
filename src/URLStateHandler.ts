@@ -5,6 +5,7 @@ import {
   URLSearchParamsProps,
   URLStateHandlerProps,
 } from "./types";
+import { URLSearchParamsWrapper } from "./URLSearchParamsWrapper";
 
 export class URLStateHandler<TValue extends string> {
   private constructor(private props: URLStateHandlerProps<TValue>) {
@@ -54,20 +55,20 @@ export class URLStateHandler<TValue extends string> {
     });
   }
 
-  getState(searchParamsProps: URLSearchParamsProps): TValue | TValue[] {
-    const urlSearchParams = new URLSearchParams(searchParamsProps);
+  getState(searchParams: URLSearchParamsProps): TValue | TValue[] {
+    const urlSearchParams = new URLSearchParamsWrapper({ queryName: this.props.name, searchParams });
 
     if (this.props.get) {
       const state = this.props.get(urlSearchParams);
 
       if (state === undefined) {
-        return urlSearchParams.get(this.props.name) as any;
+        return urlSearchParams.get() as any;
       }
 
       return state;
     }
 
-    const queryFound = urlSearchParams.get(this.props.name);
+    const queryFound = urlSearchParams.get();
 
     if (!queryFound) return this.props.defaultValue;
 
@@ -87,13 +88,13 @@ export class URLStateHandler<TValue extends string> {
   }
 
   setState(url: URLSearchParamsProps, value?: Readonly<TValue>): string {
-    const urlSearchParams = new URLSearchParams(url);
+    const urlSearchParams = new URLSearchParamsWrapper({ queryName: this.props.name, searchParams: url });
 
     if (this.props.set) {
       const state = this.props.set(urlSearchParams, value);
 
       if (state === undefined) {
-        urlSearchParams.set(this.props.name, value ? `${value}` : "") as any;
+        urlSearchParams.set(value ? `${value}` : "") as any;
         return urlSearchParams.toString();
       }
 
@@ -101,21 +102,21 @@ export class URLStateHandler<TValue extends string> {
     }
 
     if (!value && !this.props.defaultValue) {
-      urlSearchParams.delete(this.props.name);
+      urlSearchParams.delete();
       return urlSearchParams.toString();
     }
 
     if (!value) {
-      urlSearchParams.set(this.props.name, this.props.defaultValue.toString());
+      urlSearchParams.set(this.props.defaultValue.toString());
       return urlSearchParams.toString();
     }
 
     if (!this.props.values.includes(value)) {
-      urlSearchParams.set(this.props.name, this.props.defaultValue.toString());
+      urlSearchParams.set(this.props.defaultValue.toString());
       return urlSearchParams.toString();
     }
 
-    urlSearchParams.set(this.props.name, `${value}`);
+    urlSearchParams.set(`${value}`);
     return urlSearchParams.toString();
   }
 }

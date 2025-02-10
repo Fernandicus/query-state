@@ -97,8 +97,8 @@ describe("On URLStateHandler", () => {
             if (Math.random() > 1) return "b";
             return "a";
           },
-          setState() {
-            return new URLSearchParams();
+          setState(searchParams) {
+            return searchParams;
           },
         },
         chks: {
@@ -168,7 +168,7 @@ describe("On URLStateHandler", () => {
     const formUrlStateHandler = URLStateHandler.customValidation({
       name: "year",
       getState(urlSearchParams) {
-        const yearString = urlSearchParams.get("year");
+        const yearString = urlSearchParams.get();
         const year = parseInt(yearString);
         const currentYear = new Date().getFullYear();
 
@@ -180,11 +180,11 @@ describe("On URLStateHandler", () => {
         const year = parseInt(v);
 
         if (!year || isNaN(year)) {
-          urlSearchParams.set("year", new Date().getFullYear().toString());
+          urlSearchParams.set(new Date().getFullYear().toString());
           return urlSearchParams;
         }
 
-        urlSearchParams.set("year", v);
+        urlSearchParams.set(v);
         return urlSearchParams;
       },
     });

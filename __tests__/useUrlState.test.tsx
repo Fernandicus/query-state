@@ -73,11 +73,11 @@ describe("On useUrlState", () => {
         params: {
           name: "state",
           getState(urlSearchParams) {
-            if (urlSearchParams.get("state") === null) return "off";
+            if (urlSearchParams.get() === null) return "off";
           },
           setState(urlSearchParams, value) {
             if (value === "off") {
-              urlSearchParams.set("state", "");
+              urlSearchParams.set("");
               return urlSearchParams;
             }
           },
