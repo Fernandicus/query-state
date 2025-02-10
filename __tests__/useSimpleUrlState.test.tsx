@@ -59,4 +59,33 @@ describe("On useSimpleUrlState", () => {
     expect(mockedPushState).toBeCalledTimes(1);
     expect(secondState).toEqual("off");
   });
+
+  it("type custom", async () => {
+    const { result } = renderHook(() => {
+      return useSimpleUrlState<string>({
+        type: "custom",
+        name: "state",
+        getState(urlSearchParams) {
+          if (urlSearchParams.get("state") === null) return "off";
+        },
+        setState(urlSearchParams, value) {
+          if (value === "off") {
+            urlSearchParams.set("state", "");
+            return urlSearchParams;
+          }
+        },
+      });
+    });
+
+    const [firstState, setState] = result.current;
+    expect(firstState).toEqual("off");
+
+    act(() => {
+      setState("on");
+    });
+
+    const [secondState] = result.current;
+    expect(mockedPushState).toBeCalledTimes(1);
+    expect(secondState).toEqual("on");
+  });
 });

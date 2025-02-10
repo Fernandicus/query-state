@@ -4,7 +4,6 @@ import {
   StaticBuildProps,
   URLSearchParamsProps,
   URLStateHandlerProps,
-  URLStateValues,
 } from "./types";
 
 export class URLStateHandler<TValue extends string> {
@@ -59,7 +58,13 @@ export class URLStateHandler<TValue extends string> {
     const urlSearchParams = new URLSearchParams(searchParamsProps);
 
     if (this.props.get) {
-      return this.props.get(urlSearchParams);
+      const state = this.props.get(urlSearchParams);
+
+      if (state === undefined) {
+        return urlSearchParams.get(this.props.name) as any;
+      }
+
+      return state;
     }
 
     const queryFound = urlSearchParams.get(this.props.name);
@@ -81,11 +86,18 @@ export class URLStateHandler<TValue extends string> {
     return valueFound;
   }
 
-  setState(url: URLSearchParamsProps, value?: Readonly<TValue>) {
+  setState(url: URLSearchParamsProps, value?: Readonly<TValue>): string {
     const urlSearchParams = new URLSearchParams(url);
 
     if (this.props.set) {
-      return this.props.set(urlSearchParams, value).toString();
+      const state = this.props.set(urlSearchParams, value);
+
+      if (state === undefined) {
+        urlSearchParams.set(this.props.name, value ? `${value}` : "") as any;
+        return urlSearchParams.toString();
+      }
+
+      return state.toString();
     }
 
     if (!value && !this.props.defaultValue) {
