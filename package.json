@@ -1,13 +1,15 @@
 {
   "name": "query-state",
   "version": "1.0.0",
-  "description": "Handle URL Query State Parameters better",
+  "description": "Handling the state of your React components via URL query parameters",
   "keywords": [
     "url",
     "query",
     "query-parameters",
     "query-state",
-    "state"
+    "state",
+    "state-url",
+    "component-state"
   ],
   "license": "ISC",
   "author": "Fernando",
