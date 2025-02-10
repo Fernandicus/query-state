@@ -1,4 +1,4 @@
-import { URLStateHandler } from ".";
+import { URLStateHandler } from "./URLStateHandler";
 import { UseSimpleUrlStateProps } from "./types";
 import { useCallback, useMemo, useState } from "react";
 

@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { URLStateHandler } from ".";
+import { URLStateHandler } from "./URLStateHandler";
 import { ComposedBuildProps } from "./types";
 
 type SetState<TId extends string, TValue extends string> = { set: (id: TId, value: TValue) => void };
