@@ -1,8 +1,8 @@
 import { URLStateHandler } from "./URLStateHandler";
-import { UseUrlStateProps } from "./types";
+import { StateValue, UseUrlStateProps } from "./types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-type Return<T extends string> = [T | T[], (v: T | (string & {})) => void];
+type Return<T extends string> = [StateValue<T> | StateValue<T>[], (v: StateValue<T> | StateValue<T>[]) => void];
 
 export function useUrlState<T extends string>(props: UseUrlStateProps<T>): Return<T> {
   const [searchParams, setSearchParams] = useState(location.search);
@@ -35,7 +35,7 @@ export function useUrlState<T extends string>(props: UseUrlStateProps<T>): Retur
   }, []);
 
   const setState = useCallback(
-    (v: T) => {
+    (v: StateValue<T> | StateValue<T>) => {
       const newState = urlStateHandler.setState(location.search, v);
       window.history.pushState({}, "", "?" + newState);
       setSearchParams(newState);

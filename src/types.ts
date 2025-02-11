@@ -1,5 +1,7 @@
 import { URLSearchParamsWrapper } from "./URLSearchParamsWrapper";
 
+export type StateValue<T extends string> = T | (string & {});
+
 export type URLSearchParamsProps = ConstructorParameters<typeof URLSearchParams>[number];
 export type URLStateValues<TValue extends string> = {
   values: ReadonlyArray<TValue>;
@@ -9,7 +11,7 @@ export type URLStateValues<TValue extends string> = {
 export type URLStateHandlerProps<TValue extends string> = URLStateValues<TValue> & {
   name: string;
   get?(searchParams: URLSearchParamsWrapper): TValue;
-  set?(searchParams: URLSearchParamsWrapper, value?: TValue): URLSearchParamsWrapper;
+  set?(searchParams: URLSearchParamsWrapper, value?: StateValue<TValue> | StateValue<TValue>[]): URLSearchParamsWrapper;
 };
 
 export type StaticBuildProps<TValue extends string> = Omit<URLStateHandlerProps<TValue>, "get" | "set">;

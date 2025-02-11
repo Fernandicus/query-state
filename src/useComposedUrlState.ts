@@ -1,9 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { URLStateHandler } from "./URLStateHandler";
-import { ComposedBuildProps } from "./types";
+import { ComposedBuildProps, StateValue } from "./types";
 
-type SetState<TId extends string, TValue extends string> = { set: (id: TId, value: TValue | (string & {})) => void };
-type GetState<TId extends string, TValue extends string> = { get: (id: TId) => TValue | TValue[] };
+type SetState<TId extends string, TValue extends string> = {
+  set: (id: TId, value: StateValue<TValue> | StateValue<TValue>[]) => void;
+};
+type GetState<TId extends string, TValue extends string> = {
+  get: (id: TId) => StateValue<TValue> | StateValue<TValue>[];
+};
 type Return<TId extends string, TValue extends string> = [GetState<TId, TValue>, SetState<TId, TValue>];
 
 export function useComposedUrlState<TKey extends string, TId extends string, TValue extends string>(

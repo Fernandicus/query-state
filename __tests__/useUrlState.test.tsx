@@ -73,7 +73,7 @@ describe("On useUrlState", () => {
         params: {
           name: "state",
           getState(urlSearchParams) {
-            if (urlSearchParams.get() === null) return "off";
+            if (!urlSearchParams.get()) return "off";
           },
           setState(urlSearchParams, value) {
             if (value === "off") {
@@ -141,5 +141,51 @@ describe("On useUrlState", () => {
     const [secondState] = result.current;
     expect(mockedPushState).toBeCalledTimes(1);
     expect(secondState).toEqual("a");
+  });
+
+  it("set array value in type simple", async () => {
+    const { result } = renderHook(() => {
+      return useUrlState({
+        type: "simple",
+        params: {
+          name: "state",
+          defaultValue: "a",
+          values: ["a", "b"],
+        },
+      });
+    });
+
+    const [_, setState] = result.current;
+
+    act(() => {
+      setState(["a", "b", "w"]);
+    });
+
+    const [secondState] = result.current;
+    expect(mockedPushState).toBeCalledTimes(1);
+    expect(secondState.length).toEqual(2);
+    expect(secondState).toEqual(expect.arrayContaining(["a", "b"]));
+  });
+
+  it("set array value in type any", async () => {
+    const { result } = renderHook(() => {
+      return useUrlState({
+        type: "any",
+        params: {
+          name: "state",
+        },
+      });
+    });
+
+    const [_, setState] = result.current;
+
+    act(() => {
+      setState(["a", "b", "w"]);
+    });
+
+    const [secondState] = result.current;
+    expect(mockedPushState).toBeCalledTimes(1);
+    expect(secondState.length).toEqual(3);
+    expect(secondState).toEqual(expect.arrayContaining(["a", "b", "w"]));
   });
 });

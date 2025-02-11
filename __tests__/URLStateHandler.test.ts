@@ -53,7 +53,9 @@ describe("On URLStateHandler", () => {
     const checkValidValues = ["x", "y", "z"] as const;
     const checkUrlValues = ["x", "y", "o"];
 
-    const myUrl = `https://www.custom-url.com/path?form.inpt=a&form.chks=${checkUrlValues.join(",")}`;
+    const myUrl = `https://www.custom-url.com/path?form.inpt=a&form.chks=${encodeURIComponent(
+      checkUrlValues.join(",")
+    )}`;
     const searchParams = new URL(myUrl).search;
 
     const formUrlStateHandler = URLStateHandler.buildComposed({
@@ -85,10 +87,15 @@ describe("On URLStateHandler", () => {
     };
 
     expect(state).toEqual(expect.arrayContaining(expectedResult()));
+
+    const updatedChkState = formUrlStateHandler.chks.setState(searchParams, ["x", "y", "_"]);
+    expect(decodeURIComponent(updatedChkState)).toEqual("form.inpt=a&form.chks=x,y");
+
+    const updatedInptState = formUrlStateHandler.inpt.setState(updatedChkState, ["b", "c"]);
+    expect(decodeURIComponent(updatedInptState)).toEqual("form.inpt=b,c&form.chks=x,y");
   });
 
   it("buildComposed constructor with custom validation", async () => {
-    const checkValidValues = ["x", "y", "z"] as const;
     const checkUrlValues = ["x", "y", "o"];
 
     const myUrl = `https://www.custom-url.com/path?form.inpt=a&form.chks=${checkUrlValues.join(",")}`;
@@ -202,9 +209,9 @@ describe("On URLStateHandler", () => {
       name: "year",
       getState(urlSearchParams) {
         const yearString = urlSearchParams.get();
-        const year = parseInt(yearString);
         const currentYear = new Date().getFullYear();
 
+        const year = parseInt(yearString);
         if (isNaN(year) || year > currentYear) return currentYear.toString();
 
         return year.toString();
