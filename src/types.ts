@@ -1,3 +1,5 @@
+import { URLSearchParamsWrapper } from "./URLSearchParamsWrapper";
+
 export type URLSearchParamsProps = ConstructorParameters<typeof URLSearchParams>[number];
 export type URLStateValues<TValue extends string> = {
   values: ReadonlyArray<TValue>;
@@ -6,27 +8,28 @@ export type URLStateValues<TValue extends string> = {
 
 export type URLStateHandlerProps<TValue extends string> = URLStateValues<TValue> & {
   name: string;
-  get?(searchParams: URLSearchParams): TValue;
-  set?(searchParams: URLSearchParams, value?: TValue): URLSearchParams;
+  get?(searchParams: URLSearchParamsWrapper): TValue;
+  set?(searchParams: URLSearchParamsWrapper, value?: TValue): URLSearchParamsWrapper;
 };
 
 export type StaticBuildProps<TValue extends string> = Omit<URLStateHandlerProps<TValue>, "get" | "set">;
 
 export type UseUrlStateProps<TValue extends string> =
   | { type: "simple"; params: Omit<URLStateHandlerProps<TValue>, "get" | "set"> }
-  | { type: "custom"; params: CustomValidationProps<TValue> };
+  | { type: "custom"; params: CustomValidationProps<TValue> }
+  | { type: "any"; params: { name: string } };
 
 export type ComposedBuildProps<TKey extends string, TId extends string, TValue extends Readonly<string>> = {
   key: TKey;
   ids: {
     [Key in TId]:
-      | ({ type?: "simple" } & URLStateValues<TValue>)
-      | ({ type: "custom" } & Omit<CustomValidationProps<TValue>, "name">);
+      | { type?: "simple"; params: URLStateValues<TValue> }
+      | { type: "custom"; params: Omit<CustomValidationProps<TValue>, "name"> };
   };
 };
 
 export type CustomValidationProps<T extends string> = {
   name: string;
-  getState?: (urlSearchParams: URLSearchParams) => T;
-  setState?(urlSearchParams: URLSearchParams, value?: string): URLSearchParams;
+  getState?: (urlSearchParams: URLSearchParamsWrapper) => T;
+  setState?(urlSearchParams: URLSearchParamsWrapper, value?: string): URLSearchParamsWrapper;
 };

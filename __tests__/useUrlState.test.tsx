@@ -96,4 +96,26 @@ describe("On useUrlState", () => {
     expect(mockedPushState).toBeCalledTimes(1);
     expect(secondState).toEqual("on");
   });
+
+  it("set any value", async () => {
+    const { result } = renderHook(() => {
+      return useUrlState<string>({
+        type: "any",
+        params: {
+          name: "name",
+        },
+      });
+    });
+
+    const [firstState, setState] = result.current;
+    expect(firstState).toEqual("");
+
+    act(() => {
+      setState("John Doe");
+    });
+
+    const [secondState] = result.current;
+    expect(mockedPushState).toBeCalledTimes(1);
+    expect(secondState).toEqual("John Doe");
+  });
 });

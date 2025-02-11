@@ -60,12 +60,16 @@ describe("On URLStateHandler", () => {
       key: "form",
       ids: {
         inpt: {
-          values: ["a", "b", "c"],
-          defaultValue: "a",
+          params: {
+            values: ["a", "b", "c"],
+            defaultValue: "a",
+          },
         },
         chks: {
-          values: ["x", "y", "z"],
-          defaultValue: "x",
+          params: {
+            values: ["x", "y", "z"],
+            defaultValue: "x",
+          },
         },
       },
     });
@@ -93,17 +97,21 @@ describe("On URLStateHandler", () => {
       ids: {
         inpt: {
           type: "custom",
-          getState() {
-            if (Math.random() > 1) return "b";
-            return "a";
-          },
-          setState(searchParams) {
-            return searchParams;
+          params: {
+            getState() {
+              if (Math.random() > 1) return "b";
+              return "a";
+            },
+            setState(searchParams) {
+              return searchParams;
+            },
           },
         },
         chks: {
-          values: ["x", "y", "z"],
-          defaultValue: "x",
+          params: {
+            values: ["x", "y", "z"],
+            defaultValue: "x",
+          },
         },
       },
     });
@@ -120,12 +128,16 @@ describe("On URLStateHandler", () => {
       key: "form",
       ids: {
         inpt: {
-          defaultValue: "a",
-          values: ["a", "b", "c"],
+          params: {
+            defaultValue: "a",
+            values: ["a", "b", "c"],
+          },
         },
         chks: {
-          values: ["x", "y", "z"],
-          defaultValue: "x",
+          params: {
+            values: ["x", "y", "z"],
+            defaultValue: "x",
+          },
         },
       },
     });
@@ -146,12 +158,16 @@ describe("On URLStateHandler", () => {
       key: "form",
       ids: {
         inpt: {
-          defaultValue: "a",
-          values: ["a", "b", "c"],
+          params: {
+            defaultValue: "a",
+            values: ["a", "b", "c"],
+          },
         },
         chks: {
-          values: checkValidValues,
-          defaultValue: "x",
+          params: {
+            values: checkValidValues,
+            defaultValue: "x",
+          },
         },
       },
     });

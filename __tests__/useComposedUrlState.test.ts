@@ -25,17 +25,23 @@ describe("On useComposedUrlState", () => {
         key: "table",
         ids: {
           sort: {
-            defaultValue: "asc",
-            values: ["desc", "asc", "idle"],
+            params: {
+              defaultValue: "asc",
+              values: ["desc", "asc", "idle"],
+            },
           },
           filter: {
-            defaultValue: "john",
-            values: ["john", "doe"],
+            params: {
+              defaultValue: "john",
+              values: ["john", "doe"],
+            },
           },
           from: {
             type: "custom",
-            getState() {
-              return now;
+            params: {
+              getState() {
+                return now;
+              },
             },
           },
         },
@@ -61,12 +67,16 @@ describe("On useComposedUrlState", () => {
         key: "table",
         ids: {
           sort: {
-            defaultValue: "asc",
-            values: ["desc", "asc", "idle"],
+            params: {
+              defaultValue: "asc",
+              values: ["desc", "asc", "idle"],
+            },
           },
           filter: {
-            defaultValue: "",
-            values: ["john", "doe"] as string[],
+            params: {
+              defaultValue: "",
+              values: ["john", "doe"] as string[],
+            },
           },
         },
       });

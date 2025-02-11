@@ -29,16 +29,16 @@ export class URLStateHandler<TValue extends string> {
       if (id.type == "custom") {
         all[name] = URLStateHandler.customValidation({
           name: `${key}.${name}`,
-          getState: id.getState,
-          setState: id.setState,
+          getState: id.params.getState,
+          setState: id.params.setState,
         });
         return;
       }
 
       all[name] = new URLStateHandler<TValue>({
         name: `${key}.${name}`,
-        values: id.values,
-        defaultValue: id.defaultValue,
+        values: id.params.values,
+        defaultValue: id.params.defaultValue,
       });
     });
 
