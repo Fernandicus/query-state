@@ -60,12 +60,14 @@ describe("On URLStateHandler", () => {
       key: "form",
       ids: {
         inpt: {
+          type: "simple",
           params: {
             values: ["a", "b", "c"],
             defaultValue: "a",
           },
         },
         chks: {
+          type: "simple",
           params: {
             values: ["x", "y", "z"],
             defaultValue: "x",
@@ -107,17 +109,28 @@ describe("On URLStateHandler", () => {
             },
           },
         },
-        chks: {
-          params: {
-            values: ["x", "y", "z"],
-            defaultValue: "x",
-          },
-        },
       },
     });
 
     const state = formUrlStateHandler.inpt.getState(searchParams);
     expect(state).toEqual("a");
+  });
+
+  it("buildComposed constructor with of type any", async () => {
+    const myUrl = `https://www.custom-url.com/path?form.inpt=John%20Doe`;
+    const searchParams = new URL(myUrl).search;
+
+    const formHandler = URLStateHandler.buildComposed({
+      key: "form",
+      ids: {
+        inpt: {
+          type: "any",
+        },
+      },
+    });
+
+    const state = formHandler.inpt.getState(searchParams);
+    expect(state).toEqual("John Doe");
   });
 
   it("buildComposed constructor, getState", async () => {
@@ -128,12 +141,14 @@ describe("On URLStateHandler", () => {
       key: "form",
       ids: {
         inpt: {
+          type: "simple",
           params: {
             defaultValue: "a",
             values: ["a", "b", "c"],
           },
         },
         chks: {
+          type: "simple",
           params: {
             values: ["x", "y", "z"],
             defaultValue: "x",
@@ -158,12 +173,14 @@ describe("On URLStateHandler", () => {
       key: "form",
       ids: {
         inpt: {
+          type: "simple",
           params: {
             defaultValue: "a",
             values: ["a", "b", "c"],
           },
         },
         chks: {
+          type: "simple",
           params: {
             values: checkValidValues,
             defaultValue: "x",

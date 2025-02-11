@@ -26,20 +26,38 @@ export class URLStateHandler<TValue extends string> {
       const name = k as keyof typeof ids;
       const id = ids[name];
 
-      if (id.type == "custom") {
-        all[name] = URLStateHandler.customValidation({
-          name: `${key}.${name}`,
-          getState: id.params.getState,
-          setState: id.params.setState,
-        });
-        return;
-      }
+      const type = id.type;
 
-      all[name] = new URLStateHandler<TValue>({
-        name: `${key}.${name}`,
-        values: id.params.values,
-        defaultValue: id.params.defaultValue,
-      });
+      switch (type) {
+        case "custom":
+          all[name] = URLStateHandler.customValidation({
+            name: `${key}.${name}`,
+            getState: id.params.getState,
+            setState: id.params.setState,
+          });
+          break;
+        case "simple":
+          all[name] = new URLStateHandler<TValue>({
+            name: `${key}.${name}`,
+            values: id.params.values,
+            defaultValue: id.params.defaultValue,
+          });
+          break;
+        case "any":
+          all[name] = URLStateHandler.customValidation({
+            name: `${key}.${name}`,
+            getState(searchParams) {
+              return searchParams.get() ?? ("" as any);
+            },
+            setState(urlSearchParams, value) {
+              urlSearchParams.set(value);
+              return urlSearchParams;
+            },
+          });
+          break;
+        default:
+          throw unhandledValue(type);
+      }
     });
 
     return all;
@@ -119,4 +137,8 @@ export class URLStateHandler<TValue extends string> {
     urlSearchParams.set(`${value}`);
     return urlSearchParams.toString();
   }
+}
+
+function unhandledValue(v: never): v is never {
+  throw new Error("Unhandled type " + v);
 }

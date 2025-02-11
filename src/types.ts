@@ -23,8 +23,9 @@ export type ComposedBuildProps<TKey extends string, TId extends string, TValue e
   key: TKey;
   ids: {
     [Key in TId]:
-      | { type?: "simple"; params: URLStateValues<TValue> }
-      | { type: "custom"; params: Omit<CustomValidationProps<TValue>, "name"> };
+      | { type: "simple"; params: URLStateValues<TValue> }
+      | { type: "custom"; params: Omit<CustomValidationProps<TValue>, "name"> }
+      | { type: "any" };
   };
 };
 

@@ -25,12 +25,14 @@ describe("On useComposedUrlState", () => {
         key: "table",
         ids: {
           sort: {
+            type: "simple",
             params: {
               defaultValue: "asc",
               values: ["desc", "asc", "idle"],
             },
           },
           filter: {
+            type: "simple",
             params: {
               defaultValue: "john",
               values: ["john", "doe"],
@@ -67,12 +69,14 @@ describe("On useComposedUrlState", () => {
         key: "table",
         ids: {
           sort: {
+            type: "simple",
             params: {
               defaultValue: "asc",
               values: ["desc", "asc", "idle"],
             },
           },
           filter: {
+            type: "simple",
             params: {
               defaultValue: "",
               values: ["john", "doe"] as string[],
