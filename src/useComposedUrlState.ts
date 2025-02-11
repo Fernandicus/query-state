@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { URLStateHandler } from "./URLStateHandler";
 import { ComposedBuildProps } from "./types";
 
-type SetState<TId extends string, TValue extends string> = { set: (id: TId, value: TValue) => void };
+type SetState<TId extends string, TValue extends string> = { set: (id: TId, value: TValue | (string & {})) => void };
 type GetState<TId extends string, TValue extends string> = { get: (id: TId) => TValue | TValue[] };
 type Return<TId extends string, TValue extends string> = [GetState<TId, TValue>, SetState<TId, TValue>];
 

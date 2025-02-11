@@ -58,7 +58,7 @@ describe("On useUrlState", () => {
     expect(firstState).toEqual("off");
 
     act(() => {
-      setState("" as any);
+      setState("");
     });
 
     const [secondState] = result.current;
@@ -68,7 +68,7 @@ describe("On useUrlState", () => {
 
   it("type custom", async () => {
     const { result } = renderHook(() => {
-      return useUrlState<string>({
+      return useUrlState({
         type: "custom",
         params: {
           name: "state",
@@ -97,9 +97,9 @@ describe("On useUrlState", () => {
     expect(secondState).toEqual("on");
   });
 
-  it("set any value", async () => {
+  it("set any value in type any", async () => {
     const { result } = renderHook(() => {
-      return useUrlState<string>({
+      return useUrlState({
         type: "any",
         params: {
           name: "name",
@@ -117,5 +117,29 @@ describe("On useUrlState", () => {
     const [secondState] = result.current;
     expect(mockedPushState).toBeCalledTimes(1);
     expect(secondState).toEqual("John Doe");
+  });
+
+  it("set any value in type simple", async () => {
+    const { result } = renderHook(() => {
+      return useUrlState({
+        type: "simple",
+        params: {
+          name: "state",
+          defaultValue: "a",
+          values: ["a", "b"],
+        },
+      });
+    });
+
+    const [firstState, setState] = result.current;
+    expect(firstState).toEqual("a");
+
+    act(() => {
+      setState("x");
+    });
+
+    const [secondState] = result.current;
+    expect(mockedPushState).toBeCalledTimes(1);
+    expect(secondState).toEqual("a");
   });
 });

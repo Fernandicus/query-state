@@ -2,7 +2,7 @@ import { URLStateHandler } from "./URLStateHandler";
 import { UseUrlStateProps } from "./types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 
-type Return<T extends string> = [T | T[], (v: T) => void];
+type Return<T extends string> = [T | T[], (v: T | (string & {})) => void];
 
 export function useUrlState<T extends string>(props: UseUrlStateProps<T>): Return<T> {
   const [searchParams, setSearchParams] = useState(location.search);
