@@ -111,10 +111,10 @@ const [state, setState] = useUrlState({
 ## 🔄 Managing Multiple States
 
 Sometimes, you need multiple states in a single URL, like for a form with multiple fields.
-Use `useComposedUrlState` to handle this scenario:
+Use `useUrlMultiState` to handle this scenario:
 
 ```tsx
-const [state, setState] = useComposedUrlState({
+const [state, setState] = useUrlMultiState({
   key: "form",
   ids: {
     name: {
@@ -139,7 +139,7 @@ setState.set("age", "under-age");
 You can also store arrays in the URL:
 
 ```tsx
-const [state, setState] = useComposedUrlState({
+const [state, setState] = useUrlMultiState({
   key: "form",
   ids: {
     food: {

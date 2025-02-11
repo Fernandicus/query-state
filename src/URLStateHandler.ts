@@ -1,5 +1,5 @@
 import {
-  ComposedBuildProps,
+  MultiBuildProps,
   CustomValidationProps,
   StateValue,
   StaticBuildProps,
@@ -17,8 +17,8 @@ export class URLStateHandler<TValue extends string> {
     return new URLStateHandler(props);
   }
 
-  static buildComposed<TValue extends string, TKey extends string = string, TId extends string = string>(
-    props: ComposedBuildProps<TKey, TId, TValue>
+  static buildMulti<TValue extends string, TKey extends string = string, TId extends string = string>(
+    props: MultiBuildProps<TKey, TId, TValue>
   ): Record<TId, URLStateHandler<TValue>> {
     const { key, ids } = props;
     const all = {} as Record<TId, URLStateHandler<TValue>>;

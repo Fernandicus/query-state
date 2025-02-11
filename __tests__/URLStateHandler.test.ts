@@ -58,7 +58,7 @@ describe("On URLStateHandler", () => {
     )}`;
     const searchParams = new URL(myUrl).search;
 
-    const formUrlStateHandler = URLStateHandler.buildComposed({
+    const formUrlStateHandler = URLStateHandler.buildMulti({
       key: "form",
       ids: {
         inpt: {
@@ -101,7 +101,7 @@ describe("On URLStateHandler", () => {
     const myUrl = `https://www.custom-url.com/path?form.inpt=a&form.chks=${checkUrlValues.join(",")}`;
     const searchParams = new URL(myUrl).search;
 
-    const formUrlStateHandler = URLStateHandler.buildComposed({
+    const formUrlStateHandler = URLStateHandler.buildMulti({
       key: "form",
       ids: {
         inpt: {
@@ -127,7 +127,7 @@ describe("On URLStateHandler", () => {
     const myUrl = `https://www.custom-url.com/path?form.inpt=John%20Doe`;
     const searchParams = new URL(myUrl).search;
 
-    const formHandler = URLStateHandler.buildComposed({
+    const formHandler = URLStateHandler.buildMulti({
       key: "form",
       ids: {
         inpt: {
@@ -144,7 +144,7 @@ describe("On URLStateHandler", () => {
     const myUrl = `https://www.custom-url.com/path?form.inpt=a}`;
     const searchParams = new URL(myUrl).search;
 
-    const formUrlStateHandler = URLStateHandler.buildComposed({
+    const formUrlStateHandler = URLStateHandler.buildMulti({
       key: "form",
       ids: {
         inpt: {
@@ -176,7 +176,7 @@ describe("On URLStateHandler", () => {
     const myUrl = `https://www.custom-url.com/path?form.inpt=a&form.chks=${checkUrlValues.join(",")}`;
     const searchParams = new URL(myUrl).search;
 
-    const formUrlStateHandler = URLStateHandler.buildComposed({
+    const formUrlStateHandler = URLStateHandler.buildMulti({
       key: "form",
       ids: {
         inpt: {

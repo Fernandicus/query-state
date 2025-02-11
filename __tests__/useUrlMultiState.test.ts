@@ -1,5 +1,5 @@
 import { renderHook, act } from "@testing-library/react";
-import { useComposedUrlState } from "../src/useComposedUrlState";
+import { useUrlMultiState } from "../src/useUrlMultiState";
 
 const mockedPushState = vi.fn();
 
@@ -13,7 +13,7 @@ vi.spyOn(window, "history", "get").mockReturnValue({
   pushState: mockedPushState,
 });
 
-describe("On useComposedUrlState", () => {
+describe("On useUrlMultiState", () => {
   afterEach(() => {
     vi.clearAllMocks();
   });
@@ -21,7 +21,7 @@ describe("On useComposedUrlState", () => {
   it("setState calls pushState and updates the state", async () => {
     const now = Date.now().toString();
     const { result } = renderHook(() => {
-      return useComposedUrlState({
+      return useUrlMultiState({
         key: "table",
         ids: {
           sort: {
@@ -65,7 +65,7 @@ describe("On useComposedUrlState", () => {
 
   it("setState calls pushState and updates the state", async () => {
     const { result } = renderHook(() => {
-      return useComposedUrlState({
+      return useUrlMultiState({
         key: "table",
         ids: {
           sort: {

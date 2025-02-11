@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { URLStateHandler } from "./URLStateHandler";
-import { ComposedBuildProps, StateValue } from "./types";
+import { MultiBuildProps, StateValue } from "./types";
 
 type SetState<TId extends string, TValue extends string> = {
   set: (id: TId, value: StateValue<TValue> | StateValue<TValue>[]) => void;
@@ -10,8 +10,8 @@ type GetState<TId extends string, TValue extends string> = {
 };
 type Return<TId extends string, TValue extends string> = [GetState<TId, TValue>, SetState<TId, TValue>];
 
-export function useComposedUrlState<TKey extends string, TId extends string, TValue extends string>(
-  props: ComposedBuildProps<TKey, TId, TValue>
+export function useUrlMultiState<TKey extends string, TId extends string, TValue extends string>(
+  props: MultiBuildProps<TKey, TId, TValue>
 ): Return<TId, TValue> {
   const [searchParams, setSearchParams] = useState(location.search);
 
@@ -20,7 +20,7 @@ export function useComposedUrlState<TKey extends string, TId extends string, TVa
   }, [location.search]);
 
   const urlStateHandler = useMemo(() => {
-    return URLStateHandler.buildComposed(props);
+    return URLStateHandler.buildMulti(props);
   }, []);
 
   const setState = useMemo(() => {

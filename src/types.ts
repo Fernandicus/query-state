@@ -21,7 +21,7 @@ export type UseUrlStateProps<TValue extends string> =
   | { type: "custom"; params: CustomValidationProps<TValue> }
   | { type: "any"; params: { name: string } };
 
-export type ComposedBuildProps<TKey extends string, TId extends string, TValue extends Readonly<string>> = {
+export type MultiBuildProps<TKey extends string, TId extends string, TValue extends Readonly<string>> = {
   key: TKey;
   ids: {
     [Key in TId]:
