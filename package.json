@@ -1,5 +1,5 @@
 {
-  "name": "query-state",
+  "name": "query-state-hook",
   "version": "1.0.0",
   "description": "Easily manage the state of your React components via URL query parameters",
   "keywords": [
@@ -7,11 +7,13 @@
     "query",
     "query-parameters",
     "query-state",
+    "query-state-hook",
     "state",
     "state-url",
     "component-state",
     "react",
-    "react-hook"
+    "react-hook",
+    "front-end"
   ],
   "license": "ISC",
   "author": "Fernando",
