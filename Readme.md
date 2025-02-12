@@ -155,6 +155,27 @@ const [state, setState] = useUrlMultiState({
 setState.set("food", ["mango", "pizza"]);
 ```
 
+## 📖 Server Components (e.g., NextJS)
+
+When using server components—such as with Next.js—you might notice a slight flicker in the component state due to differences between the server-rendered HTML and the client state. To prevent this flicker, you can pass URLSearchParams to the hook, ensuring the state is initialized consistently on both the server and client.
+
+```tsx
+const searchParams = useSearchParams();
+const [state, setState] = useUrlState(
+  {
+    type: "simple",
+    params: {
+      name: "switch-btn",
+      defaultValue: "off",
+      values: ["on", "off"],
+    },
+  },
+  searchParams
+);
+```
+
+This approach ensures smoother state hydration and avoids mismatches between server and client-rendered output.
+
 ## 📖 Conclusion
 
 `query-state-hook` simplifies managing UI state by leveraging the browser's URL, making applications more user-friendly, persistent, and shareable.
