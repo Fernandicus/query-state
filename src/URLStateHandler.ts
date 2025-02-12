@@ -7,6 +7,7 @@ import {
   URLStateHandlerProps,
 } from "./types";
 import { URLSearchParamsWrapper } from "./URLSearchParamsWrapper";
+import { unhandledValue } from "./utils";
 
 export class URLStateHandler<TValue extends string> {
   private constructor(private props: URLStateHandlerProps<TValue>) {
@@ -166,8 +167,4 @@ export class URLStateHandler<TValue extends string> {
 
     return state;
   }
-}
-
-function unhandledValue(v: never): v is never {
-  throw new Error("Unhandled type " + v);
 }

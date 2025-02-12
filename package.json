@@ -1,6 +1,8 @@
 {
   "name": "query-state-hook",
-  "version": "1.0.0",
+  "version": "1.1.0",
+  "license": "MIT",
+  "author": "Fernandicus",
   "description": "Easily manage the state of your React components via URL query parameters",
   "keywords": [
     "url",
@@ -15,8 +17,6 @@
     "react-hook",
     "front-end"
   ],
-  "license": "ISC",
-  "author": "Fernando",
   "type": "module",
   "main": "dist/index.js",
   "exports": {
@@ -39,7 +39,8 @@
     "typescript": "^5.7.3",
     "vite": "^6.1.0",
     "vite-plugin-dts": "^4.5.0",
-    "vitest": "^3.0.2"
+    "vitest": "^3.0.2",
+    "path": "^0.12.7"
   },
   "prettier": {
     "printWidth": 120
@@ -47,8 +48,5 @@
   "peerDependencies": {
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
-  },
-  "dependencies": {
-    "path": "^0.12.7"
   }
 }
