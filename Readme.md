@@ -1,8 +1,8 @@
-# 🌐 Query State
+# 🌐 Query State Hook
 
 ## 🚀 Introduction
 
-`query-state` provides a simple and efficient way to store and validate your component state directly in the URL. This approach enhances usability, improves navigation, and simplifies state management without requiring external state management tools like Redux or Context API.
+`query-state-hook` provides a simple and efficient way to store and validate your component state directly in the URL. This approach enhances usability, improves navigation, and simplifies state management without requiring external state management tools like Redux or Context API.
 
 ## 🎯 Benefits of Managing State Through the URL
 
@@ -28,12 +28,12 @@ No need for external state management tools (like Redux or Context) for simple U
 
 ## 📦 Installation
 
-Install `query-state` using npm or yarn:
+Install `query-state-hook` using npm or yarn:
 
 ```sh
-npm install query-state
+npm install query-state-hook
 # or
-yarn add query-state
+yarn add query-state-hook
 ```
 
 ## ⚙️ How it works?
@@ -157,6 +157,6 @@ setState.set("food", ["mango", "pizza"]);
 
 ## 📖 Conclusion
 
-`query-state` simplifies managing UI state by leveraging the browser's URL, making applications more user-friendly, persistent, and shareable.
+`query-state-hook` simplifies managing UI state by leveraging the browser's URL, making applications more user-friendly, persistent, and shareable.
 
 **💡 Try it out and enhance your app’s state management today! 🚀**
