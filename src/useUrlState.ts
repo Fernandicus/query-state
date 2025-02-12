@@ -1,15 +1,20 @@
 import { URLStateHandler } from "./URLStateHandler";
 import { StateValue, UseUrlStateProps } from "./types";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { unhandledValue } from "./utils";
 
 type Return<T extends string> = [StateValue<T> | StateValue<T>[], (v: StateValue<T> | StateValue<T>[]) => void];
 
-export function useUrlState<T extends string>(props: UseUrlStateProps<T>): Return<T> {
-  const [searchParams, setSearchParams] = useState(location.search);
+export function useUrlState<T extends string>(props: UseUrlStateProps<T>, search?: URLSearchParams): Return<T> {
+  const [searchParams, setSearchParams] = useState(search && search.toString());
 
   useEffect(() => {
-    setSearchParams(location.search);
-  }, [location.search]);
+    if (search) {
+      setSearchParams(search.toString());
+    } else {
+      setSearchParams(location.search);
+    }
+  }, [search]);
 
   const urlStateHandler = useMemo(() => {
     const type = props.type;
@@ -32,7 +37,7 @@ export function useUrlState<T extends string>(props: UseUrlStateProps<T>): Retur
       default:
         throw unhandledValue(type);
     }
-  }, []);
+  }, [props]);
 
   const setState = useCallback(
     (v: StateValue<T> | StateValue<T>) => {
@@ -40,14 +45,10 @@ export function useUrlState<T extends string>(props: UseUrlStateProps<T>): Retur
       window.history.pushState({}, "", "?" + newState);
       setSearchParams(newState);
     },
-    [searchParams]
+    [urlStateHandler]
   );
 
   const getState = urlStateHandler.getState(searchParams);
 
   return [getState, setState];
-}
-
-function unhandledValue(v: never): v is never {
-  throw new Error("Unhandled type " + v);
 }

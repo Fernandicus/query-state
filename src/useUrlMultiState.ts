@@ -11,27 +11,32 @@ type GetState<TId extends string, TValue extends string> = {
 type Return<TId extends string, TValue extends string> = [GetState<TId, TValue>, SetState<TId, TValue>];
 
 export function useUrlMultiState<TKey extends string, TId extends string, TValue extends string>(
-  props: MultiBuildProps<TKey, TId, TValue>
+  props: MultiBuildProps<TKey, TId, TValue>,
+  search?: URLSearchParams
 ): Return<TId, TValue> {
-  const [searchParams, setSearchParams] = useState(location.search);
+  const [searchParams, setSearchParams] = useState(search && search.toString());
 
   useEffect(() => {
-    setSearchParams(location.search);
-  }, [location.search]);
+    if (search) {
+      setSearchParams(search.toString());
+    } else {
+      setSearchParams(location.search);
+    }
+  }, [search]);
 
   const urlStateHandler = useMemo(() => {
     return URLStateHandler.buildMulti(props);
-  }, []);
+  }, [props]);
 
   const setState = useMemo(() => {
     return {
       set(k: TId, v: TValue) {
-        const newState = urlStateHandler[k].setState(searchParams, v);
+        const newState = urlStateHandler[k].setState(location.search, v);
         window.history.pushState({}, "", "?" + newState);
         setSearchParams(newState);
       },
     };
-  }, [searchParams]);
+  }, [urlStateHandler]);
 
   const getState = useMemo(() => {
     return {
@@ -39,7 +44,7 @@ export function useUrlMultiState<TKey extends string, TId extends string, TValue
         return urlStateHandler[k].getState(searchParams);
       },
     };
-  }, [searchParams]);
+  }, [searchParams, urlStateHandler]);
 
   return [getState, setState];
 }
