@@ -14,7 +14,7 @@ export function useUrlState<T extends string>(props: UseUrlStateProps<T>, search
     } else {
       setSearchParams(location.search);
     }
-  }, [search]);
+  }, [search ?? location.search]);
 
   const urlStateHandler = useMemo(() => {
     const type = props.type;

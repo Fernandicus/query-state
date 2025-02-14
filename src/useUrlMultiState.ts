@@ -22,7 +22,7 @@ export function useUrlMultiState<TKey extends string, TId extends string, TValue
     } else {
       setSearchParams(location.search);
     }
-  }, [search]);
+  }, [search ?? location.search]);
 
   const urlStateHandler = useMemo(() => {
     return URLStateHandler.buildMulti(props);
