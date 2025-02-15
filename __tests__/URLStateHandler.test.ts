@@ -1,4 +1,4 @@
-import { URLStateHandler } from "../src/URLStateHandler";
+import { URLStateHandler } from "../src/lib/URLStateHandler";
 
 describe("On URLStateHandler", () => {
   it("Get State", async () => {

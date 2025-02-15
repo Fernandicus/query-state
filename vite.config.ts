@@ -12,7 +12,7 @@ export default defineConfig({
   ],
   build: {
     lib: {
-      entry: resolve(new URL("./src/index.ts", import.meta.url).pathname),
+      entry: resolve(new URL("./src/lib/index.ts", import.meta.url).pathname),
       name: "URLStateHanlder",
       fileName: "index",
     },

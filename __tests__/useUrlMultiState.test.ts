@@ -1,5 +1,5 @@
 import { renderHook, act } from "@testing-library/react";
-import { useUrlMultiState } from "../src/useUrlMultiState";
+import { useUrlMultiState } from "../src/lib/useUrlMultiState";
 
 const mockedPushState = vi.fn();
 
