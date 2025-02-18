@@ -1,7 +1,7 @@
 import { URLStateHandler } from "./URLStateHandler";
 import { StateValue, UseUrlStateProps } from "./types";
-import { useCallback, useMemo } from "react";
-import { unhandledValue } from "./utils";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { cleanState, unhandledValue } from "./utils";
 
 type Return<T extends string> = {
   state: {
@@ -15,6 +15,7 @@ type Return<T extends string> = {
   setState(v: StateValue<T> | StateValue<T>[]): void;
   clean(v: StateValue<T> | StateValue<T>[] | "all"): void;
 };
+
 type Props<T extends string> = {
   props: UseUrlStateProps<T>;
   searchParams: URLSearchParams;
@@ -22,6 +23,12 @@ type Props<T extends string> = {
 };
 
 export function useUrlState<T extends string>({ props, searchParams, updateSearchParams }: Props<T>): Return<T> {
+  const [params, setSearchParams] = useState(searchParams);
+
+  useEffect(() => {
+    setSearchParams(searchParams);
+  }, [searchParams]);
+
   const urlStateHandler = useMemo(() => {
     const type = props.type;
     switch (type) {
@@ -36,6 +43,10 @@ export function useUrlState<T extends string>({ props, searchParams, updateSearc
             return searchParams.get() ?? ("" as any);
           },
           setState(urlSearchParams, value) {
+            if (!value) {
+              urlSearchParams.delete();
+              return urlSearchParams;
+            }
             urlSearchParams.set(value);
             return urlSearchParams;
           },
@@ -47,14 +58,15 @@ export function useUrlState<T extends string>({ props, searchParams, updateSearc
 
   const setState = useCallback(
     (v: StateValue<T> | StateValue<T>[]) => {
-      const newState = urlStateHandler.setState(searchParams, v);
+      const newState = urlStateHandler.setState(params, v);
       const newSearchParams = new URLSearchParams(newState);
+      setSearchParams(newSearchParams);
       updateSearchParams(newSearchParams);
     },
-    [searchParams]
+    [params]
   );
 
-  const stateValue = useMemo(() => urlStateHandler.getState(searchParams), [searchParams]);
+  const stateValue = useMemo(() => urlStateHandler.getState(params), [params]);
 
   return {
     state: {
@@ -73,24 +85,14 @@ export function useUrlState<T extends string>({ props, searchParams, updateSearc
     },
     setState,
     clean(deleteValue) {
-      if (deleteValue === "all") {
-        searchParams.delete(props.params.name);
-        updateSearchParams(searchParams);
-        return;
-      }
+      const cleanedSearchParams = cleanState({
+        currentState: stateValue,
+        deleteValue,
+        name: props.params.name,
+        searchParams,
+      });
 
-      const currentValues = new Set([stateValue].flat());
-      const cleanedValues = currentValues.difference(new Set([deleteValue].flat()));
-
-      if (cleanedValues.size === 0) {
-        searchParams.delete(props.params.name);
-        updateSearchParams(searchParams);
-        return;
-      }
-
-      searchParams.set(props.params.name, Array.from(cleanedValues).toString());
-
-      updateSearchParams(searchParams);
+      updateSearchParams(cleanedSearchParams);
       return;
     },
   } satisfies Return<T>;

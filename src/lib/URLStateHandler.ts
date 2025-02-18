@@ -117,7 +117,3 @@ export class URLStateHandler<TValue extends string> {
     return state;
   }
 }
-
-function isURLStateHandler<T extends string>(value: unknown): value is URLStateHandler<T> {
-  return value !== undefined && typeof value === "object" && "getState" in value;
-}

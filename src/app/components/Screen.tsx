@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useMemo } from "react";
 import { useUrlSizeState } from "../hooks/useUrlSizeState";
 import { useUrlColorState } from "../hooks/useUrlColorsState";
+import { formContext } from "../FormStateProvider";
 
 export function Screen() {
+  const ctx = formContext();
+
   const { sizes, sizeState } = useUrlSizeState();
   const { defaultColor, colorsState } = useUrlColorState();
 
@@ -49,7 +52,7 @@ export function Screen() {
             gap: "10px",
           }}
         >
-          <label style={{ fontSize: "12px", color: "white" }}>size: {sizeState}</label>
+          <h2 style={{ color: "white" }}> {ctx.title.length ? ctx.title : "Title"}</h2>
           <div
             style={{
               background: color,

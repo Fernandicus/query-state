@@ -81,6 +81,10 @@ export class URLMultiStateHandler<
             return searchParams.get() ?? ("" as any);
           },
           setState(urlSearchParams, value) {
+            if (!value) {
+              urlSearchParams.delete();
+              return urlSearchParams;
+            }
             urlSearchParams.set(value);
             return urlSearchParams;
           },
@@ -95,6 +99,7 @@ export class URLMultiStateHandler<
 
   private buildNameFromKey(key: string) {
     const name = this.props.name;
+    console.log(name ? `${name}.${key}` : key);
     return name ? `${name}.${key}` : key;
   }
 }

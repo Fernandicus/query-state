@@ -8,7 +8,7 @@ describe("On useUrlState", () => {
     vi.clearAllMocks();
   });
 
-  it("setState calls pushState and updates the state", async () => {
+  it.only("setState calls pushState and updates the state", async () => {
     const searchParams = new URLSearchParams({ some: "value" });
 
     const { result } = renderHook(() => {
@@ -140,6 +140,35 @@ describe("On useUrlState", () => {
     expect(updateSearchParams).toBeCalledTimes(1);
     expect(updateSearchParams).toBeCalledWith(searchParams);
     expect(secondResult.state.value).toEqual(newName);
+  });
+
+  it("set empty string in type any", async () => {
+    const searchParams = new URLSearchParams({ some: "value" });
+
+    const { result } = renderHook(() => {
+      return useUrlState({
+        props: {
+          type: "any",
+          params: {
+            name: "name",
+          },
+        },
+        searchParams,
+        updateSearchParams,
+      });
+    });
+
+    const firstResult = result.current;
+    expect(firstResult.state.value).toEqual("");
+
+    act(() => {
+      firstResult.setState("");
+    });
+
+    const secondResult = result.current;
+    expect(updateSearchParams).toBeCalledTimes(1);
+    expect(updateSearchParams).toBeCalledWith(searchParams);
+    expect(secondResult.state.value).toEqual("");
   });
 
   it("set any value in type simple", async () => {

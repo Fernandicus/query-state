@@ -1,6 +1,5 @@
 import { useSearchParams } from "react-router";
 import { useUrlState } from "../../lib/useUrlState";
-import { useEffect } from "react";
 
 export function useUrlColorState() {
   const [searchParams, updateSearchParams] = useSearchParams();

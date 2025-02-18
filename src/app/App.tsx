@@ -1,29 +1,36 @@
-import React, { useState } from "react";
+import React, { useCallback, useMemo, useState } from "react";
 import { Screen } from "./components/Screen";
 import { Settings } from "./components/Settings";
 import "./App.css";
+import { formContext } from "./FormStateProvider";
 
 export function App() {
-  const [page, setPage] = useState(true);
+  const ctx = formContext();
+
   return (
     <div>
-      <nav>
-        <ul>
-          <button
-            onClick={() => {
-              setPage((prev) => !prev);
-            }}
-          >
-            asd
-          </button>
-        </ul>
-      </nav>
-      {page && (
-        <>
-          <Settings />
-          <Screen />
-        </>
-      )}
+      <input
+        type="text"
+        onChange={(v) => {
+          ctx.setTitle(v.target.value);
+        }}
+        placeholder="Title"
+        value={ctx.title}
+        style={{
+          backgroundColor: "white",
+        }}
+      />
+      <button
+        onClick={() => {
+          ctx.clean("title");
+        }}
+      >
+        Clean
+      </button>
+      <div style={{ padding: "15px" }}>
+        <Settings />
+        <Screen />
+      </div>
     </div>
   );
 }
