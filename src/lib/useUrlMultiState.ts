@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { URLStateHandler } from "./URLStateHandler";
 import { MultiBuildProps, StateValue } from "./types";
+import { URLMultiStateHandler } from "./URLMultiStateHandler";
 
 type SetState<TId extends string, TValue extends string> = {
   set: (id: TId, value: StateValue<TValue> | StateValue<TValue>[]) => void;
@@ -27,7 +28,7 @@ export function useUrlMultiState<TKey extends string, TId extends string, TValue
   }, [searchParams]);
 
   const urlStateHandler = useMemo(() => {
-    return URLStateHandler.buildMulti(props);
+    return URLMultiStateHandler.buildComposed(props);
   }, [props]);
 
   const setState = useMemo(() => {
