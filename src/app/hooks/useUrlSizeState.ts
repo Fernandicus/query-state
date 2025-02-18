@@ -6,7 +6,7 @@ export function useUrlSizeState() {
 
   const sizes = ["xs", "sm", "md", "lg", "xl"] as const;
 
-  const { state, setState } = useUrlState({
+  const { state, setState, clean } = useUrlState({
     props: {
       type: "simple",
       params: {
@@ -20,10 +20,9 @@ export function useUrlSizeState() {
   });
 
   return {
-    sizeState: Array.isArray(state.value)
-      ? (state.value[0] as (typeof sizes)[number])
-      : (state.value as (typeof sizes)[number]),
+    sizeState: state.firstElement(),
     setSizeState: setState,
     sizes,
+    clean,
   };
 }

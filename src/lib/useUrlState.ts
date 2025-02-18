@@ -1,14 +1,19 @@
 import { URLStateHandler } from "./URLStateHandler";
 import { StateValue, UseUrlStateProps } from "./types";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo } from "react";
 import { unhandledValue } from "./utils";
 
 type Return<T extends string> = {
   state: {
     value: StateValue<T> | StateValue<T>[];
-    is(v: T): boolean;
+    is(v: StateValue<T>): boolean;
+    has(v: StateValue<T>): boolean;
+    has(v: StateValue<T>): boolean;
+    isArray(v: StateValue<T> | StateValue<T>[]): v is StateValue<T>[];
+    firstElement(): StateValue<T>;
   };
   setState(v: StateValue<T> | StateValue<T>[]): void;
+  clean(v: StateValue<T> | StateValue<T>[] | "all"): void;
 };
 type Props<T extends string> = {
   props: UseUrlStateProps<T>;
@@ -17,12 +22,6 @@ type Props<T extends string> = {
 };
 
 export function useUrlState<T extends string>({ props, searchParams, updateSearchParams }: Props<T>): Return<T> {
-  const [params, setSearchParams] = useState(searchParams);
-
-  useEffect(() => {
-    setSearchParams(searchParams);
-  }, [searchParams]);
-
   const urlStateHandler = useMemo(() => {
     const type = props.type;
     switch (type) {
@@ -47,22 +46,56 @@ export function useUrlState<T extends string>({ props, searchParams, updateSearc
   }, []);
 
   const setState = useCallback(
-    (v: StateValue<T> | StateValue<T>) => {
-      const newState = urlStateHandler.setState(params, v);
+    (v: StateValue<T> | StateValue<T>[]) => {
+      const newState = urlStateHandler.setState(searchParams, v);
       const newSearchParams = new URLSearchParams(newState);
       updateSearchParams(newSearchParams);
-      setSearchParams(newSearchParams);
     },
-    [params]
+    [searchParams]
   );
+
+  const stateValue = useMemo(() => urlStateHandler.getState(searchParams), [searchParams]);
 
   return {
     state: {
-      value: urlStateHandler.getState(params),
-      is(v: T) {
-        return this.value === v;
+      value: stateValue,
+      is(v: StateValue<T>) {
+        return stateValue === v;
+      },
+      has(v: StateValue<T>) {
+        return stateValue.includes(v);
+      },
+      isArray: isArray,
+      firstElement(): StateValue<T> {
+        if (isArray(stateValue)) return stateValue[0];
+        return stateValue;
       },
     },
     setState,
-  };
+    clean(deleteValue) {
+      if (deleteValue === "all") {
+        searchParams.delete(props.params.name);
+        updateSearchParams(searchParams);
+        return;
+      }
+
+      const currentValues = new Set([stateValue].flat());
+      const cleanedValues = currentValues.difference(new Set([deleteValue].flat()));
+
+      if (cleanedValues.size === 0) {
+        searchParams.delete(props.params.name);
+        updateSearchParams(searchParams);
+        return;
+      }
+
+      searchParams.set(props.params.name, Array.from(cleanedValues).toString());
+
+      updateSearchParams(searchParams);
+      return;
+    },
+  } satisfies Return<T>;
+}
+
+function isArray<T extends string>(v: StateValue<T> | StateValue<T>[]): v is StateValue<T>[] {
+  return Array.isArray(v);
 }

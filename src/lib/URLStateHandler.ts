@@ -8,9 +8,7 @@ import {
 import { URLSearchParamsWrapper } from "./URLSearchParamsWrapper";
 
 export class URLStateHandler<TValue extends string> {
-  private constructor(private props: URLStateHandlerProps<TValue>) {
-    this.props = props;
-  }
+  private constructor(private props: URLStateHandlerProps<TValue>) {}
 
   static build<TValues extends string>(props: StaticBuildProps<TValues>) {
     return new URLStateHandler(props);

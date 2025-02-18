@@ -14,13 +14,13 @@ export function Screen() {
 
   const color = useMemo(() => {
     const linearGradient = "linear-gradient(45deg,";
-    if (Array.isArray(colorsState)) {
-      const colors = colorsState.join(", ");
+    if (colorsState.isArray(colorsState.value)) {
+      const colors = colorsState.value.join(", ");
       return linearGradient.concat(`${colors})`);
     }
 
-    return linearGradient.concat(`${colorsState}, ${colorsState})`);
-  }, [colorsState]);
+    return linearGradient.concat(`${colorsState.value}, ${colorsState.value})`);
+  }, [colorsState.value]);
 
   return (
     <div
@@ -49,7 +49,7 @@ export function Screen() {
             gap: "10px",
           }}
         >
-          <label style={{ fontSize: "12px" }}>size: {sizeState}</label>
+          <label style={{ fontSize: "12px", color: "white" }}>size: {sizeState}</label>
           <div
             style={{
               background: color,
@@ -62,7 +62,7 @@ export function Screen() {
               alignItems: "center",
             }}
           >
-            {colorsState === defaultColor && (
+            {colorsState.is(defaultColor) && (
               <h1
                 style={{
                   color: "#ffffff26",

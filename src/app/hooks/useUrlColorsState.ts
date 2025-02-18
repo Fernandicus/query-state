@@ -1,12 +1,13 @@
 import { useSearchParams } from "react-router";
 import { useUrlState } from "../../lib/useUrlState";
+import { useEffect } from "react";
 
 export function useUrlColorState() {
   const [searchParams, updateSearchParams] = useSearchParams();
   const defaultColor = "#143140";
   const colors = ["orange", "lime", "teal", "cornflowerblue", "cornsilk", defaultColor] as const;
 
-  const { state, setState } = useUrlState({
+  const { state, setState, clean } = useUrlState({
     searchParams,
     updateSearchParams,
     props: {
@@ -20,9 +21,10 @@ export function useUrlColorState() {
   });
 
   return {
-    colorsState: state.value,
+    colorsState: state,
     setColorsState: setState,
     colors,
     defaultColor,
+    clean,
   };
 }
