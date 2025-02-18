@@ -1,5 +1,4 @@
 import {
-  MultiBuildProps,
   CustomValidationProps,
   StateValue,
   StaticBuildProps,
@@ -7,7 +6,6 @@ import {
   URLStateHandlerProps,
 } from "./types";
 import { URLSearchParamsWrapper } from "./URLSearchParamsWrapper";
-import { unhandledValue } from "./utils";
 
 export class URLStateHandler<TValue extends string> {
   private constructor(private props: URLStateHandlerProps<TValue>) {
@@ -16,53 +14,6 @@ export class URLStateHandler<TValue extends string> {
 
   static build<TValues extends string>(props: StaticBuildProps<TValues>) {
     return new URLStateHandler(props);
-  }
-
-  static buildMulti<TValue extends string, TKey extends string = string, TId extends string = string>(
-    props: MultiBuildProps<TKey, TId, TValue>
-  ): Record<TId, URLStateHandler<TValue>> {
-    const { key, ids } = props;
-    const all = {} as Record<TId, URLStateHandler<TValue>>;
-
-    Object.keys(ids).forEach((k) => {
-      const name = k as keyof typeof ids;
-      const id = ids[name];
-
-      const type = id.type;
-
-      switch (type) {
-        case "custom":
-          all[name] = URLStateHandler.customValidation({
-            name: `${key}.${name}`,
-            getState: id.params.getState,
-            setState: id.params.setState,
-          });
-          break;
-        case "simple":
-          all[name] = new URLStateHandler<TValue>({
-            name: `${key}.${name}`,
-            values: id.params.values,
-            defaultValue: id.params.defaultValue,
-          });
-          break;
-        case "any":
-          all[name] = URLStateHandler.customValidation({
-            name: `${key}.${name}`,
-            getState(searchParams) {
-              return searchParams.get() ?? ("" as any);
-            },
-            setState(urlSearchParams, value) {
-              urlSearchParams.set(value);
-              return urlSearchParams;
-            },
-          });
-          break;
-        default:
-          throw unhandledValue(type);
-      }
-    });
-
-    return all;
   }
 
   static customValidation<T extends string>(props: CustomValidationProps<T>) {
@@ -159,7 +110,7 @@ export class URLStateHandler<TValue extends string> {
     const state = this.props.get(urlSearchParams);
 
     if (state === undefined) {
-      return urlSearchParams.get();
+      return urlSearchParams.get() ?? "";
     }
 
     const splited = state.split(",");
@@ -167,4 +118,8 @@ export class URLStateHandler<TValue extends string> {
 
     return state;
   }
+}
+
+function isURLStateHandler<T extends string>(value: unknown): value is URLStateHandler<T> {
+  return value !== undefined && typeof value === "object" && "getState" in value;
 }

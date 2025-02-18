@@ -22,7 +22,7 @@ export type UseUrlStateProps<TValue extends string> =
   | { type: "any"; params: { name: string } };
 
 export type MultiBuildProps<TKey extends string, TId extends string, TValue extends Readonly<string>> = {
-  key: TKey;
+  name: TKey;
   ids: {
     [Key in TId]:
       | { type: "simple"; params: URLStateValues<TValue> }

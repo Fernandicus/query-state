@@ -1,191 +1,241 @@
 import { renderHook, act } from "@testing-library/react";
 import { useUrlState } from "../src/lib/useUrlState";
 
-const mockedPushState = vi.fn();
-
-vi.spyOn(window, "location", "get").mockReturnValue({
-  ...window.location,
-  search: "?some=query",
-});
-
-vi.spyOn(window, "history", "get").mockReturnValue({
-  ...window.history,
-  pushState: mockedPushState,
-});
-
 describe("On useUrlState", () => {
+  const updateSearchParams = vi.fn();
+
   afterEach(() => {
     vi.clearAllMocks();
   });
 
   it("setState calls pushState and updates the state", async () => {
+    const searchParams = new URLSearchParams({ some: "value" });
+
     const { result } = renderHook(() => {
       return useUrlState({
-        type: "simple",
-        params: {
-          defaultValue: "off",
-          name: "state",
-          values: ["on", "off"],
+        props: {
+          type: "simple",
+          params: {
+            name: "state",
+            defaultValue: "off",
+            values: ["on", "off"],
+          },
         },
+        searchParams,
+        updateSearchParams,
       });
     });
 
-    const [firstState, setState] = result.current;
-    expect(firstState).toEqual("off");
+    const firstResult = result.current;
+    expect(firstResult.state.value).toEqual("off");
 
     act(() => {
-      setState("on");
+      firstResult.setState("on");
     });
 
-    const [secondState] = result.current;
-    expect(mockedPushState).toBeCalledTimes(1);
-    expect(secondState).toEqual("on");
+    const secondResult = result.current;
+    searchParams.set("state", "on");
+    expect(updateSearchParams).toBeCalledTimes(1);
+    expect(updateSearchParams).toBeCalledWith(searchParams);
+    expect(secondResult.state.value).toEqual("on");
   });
 
   it("set empty state sets the default state", async () => {
+    const searchParams = new URLSearchParams({ some: "value" });
+
     const { result } = renderHook(() => {
       return useUrlState({
-        type: "simple",
-        params: {
-          defaultValue: "off",
-          name: "state",
-          values: ["on", "off"],
+        props: {
+          type: "simple",
+          params: {
+            defaultValue: "off",
+            name: "state",
+            values: ["on", "off"],
+          },
         },
+        searchParams,
+        updateSearchParams,
       });
     });
 
-    const [firstState, setState] = result.current;
-    expect(firstState).toEqual("off");
+    const firstResult = result.current;
+    expect(firstResult.state.value).toEqual("off");
 
     act(() => {
-      setState("");
+      firstResult.setState("");
     });
 
-    const [secondState] = result.current;
-    expect(mockedPushState).toBeCalledTimes(1);
-    expect(secondState).toEqual("off");
+    const secondResult = result.current;
+    searchParams.set("state", "off");
+    expect(updateSearchParams).toBeCalledTimes(1);
+    expect(updateSearchParams).toBeCalledWith(searchParams);
+    expect(secondResult.state.value).toEqual("off");
   });
 
   it("type custom", async () => {
+    const searchParams = new URLSearchParams({ some: "value" });
+
     const { result } = renderHook(() => {
       return useUrlState({
-        type: "custom",
-        params: {
-          name: "state",
-          getState(urlSearchParams) {
-            if (!urlSearchParams.get()) return "off";
-          },
-          setState(urlSearchParams, value) {
-            if (value === "off") {
-              urlSearchParams.set("");
-              return urlSearchParams;
-            }
+        props: {
+          type: "custom",
+          params: {
+            name: "state",
+            getState(urlSearchParams) {
+              if (!urlSearchParams.get()) return "off";
+            },
+            setState(urlSearchParams, value) {
+              if (value === "off") {
+                urlSearchParams.set("");
+                return urlSearchParams;
+              }
+            },
           },
         },
+        searchParams,
+        updateSearchParams,
       });
     });
 
-    const [firstState, setState] = result.current;
-    expect(firstState).toEqual("off");
+    const firstResult = result.current;
+    expect(firstResult.state.value).toEqual("off");
 
     act(() => {
-      setState("on");
+      firstResult.setState("on");
     });
 
-    const [secondState] = result.current;
-    expect(mockedPushState).toBeCalledTimes(1);
-    expect(secondState).toEqual("on");
+    const secondResult = result.current;
+    searchParams.set("state", "on");
+    expect(updateSearchParams).toBeCalledTimes(1);
+    expect(updateSearchParams).toBeCalledWith(searchParams);
+    expect(secondResult.state.value).toEqual("on");
   });
 
   it("set any value in type any", async () => {
+    const searchParams = new URLSearchParams({ some: "value" });
+
     const { result } = renderHook(() => {
       return useUrlState({
-        type: "any",
-        params: {
-          name: "name",
+        props: {
+          type: "any",
+          params: {
+            name: "name",
+          },
         },
+        searchParams,
+        updateSearchParams,
       });
     });
 
-    const [firstState, setState] = result.current;
-    expect(firstState).toEqual("");
+    const firstResult = result.current;
+    expect(firstResult.state.value).toEqual("");
 
+    const newName = "John Doe";
     act(() => {
-      setState("John Doe");
+      firstResult.setState(newName);
     });
 
-    const [secondState] = result.current;
-    expect(mockedPushState).toBeCalledTimes(1);
-    expect(secondState).toEqual("John Doe");
+    const secondResult = result.current;
+    searchParams.set("name", newName);
+    expect(updateSearchParams).toBeCalledTimes(1);
+    expect(updateSearchParams).toBeCalledWith(searchParams);
+    expect(secondResult.state.value).toEqual(newName);
   });
 
   it("set any value in type simple", async () => {
+    const searchParams = new URLSearchParams({ some: "value" });
+
     const { result } = renderHook(() => {
       return useUrlState({
-        type: "simple",
-        params: {
-          name: "state",
-          defaultValue: "a",
-          values: ["a", "b"],
+        props: {
+          type: "simple",
+          params: {
+            name: "state",
+            defaultValue: "a",
+            values: ["a", "b"],
+          },
         },
+        searchParams,
+        updateSearchParams,
       });
     });
 
-    const [firstState, setState] = result.current;
-    expect(firstState).toEqual("a");
+    const firstResult = result.current;
+    expect(firstResult.state.value).toEqual("a");
 
     act(() => {
-      setState("x");
+      firstResult.setState("x");
     });
 
-    const [secondState] = result.current;
-    expect(mockedPushState).toBeCalledTimes(1);
-    expect(secondState).toEqual("a");
+    const secondResult = result.current;
+    searchParams.set("state", "a");
+    expect(updateSearchParams).toBeCalledTimes(1);
+    expect(updateSearchParams).toBeCalledWith(searchParams);
+    expect(secondResult.state.value).toEqual("a");
+    expect(secondResult.state.is("a")).toEqual(true);
   });
 
   it("set array value in type simple", async () => {
+    const searchParams = new URLSearchParams({ some: "value" });
+
     const { result } = renderHook(() => {
       return useUrlState({
-        type: "simple",
-        params: {
-          name: "state",
-          defaultValue: "a",
-          values: ["a", "b"],
+        props: {
+          type: "simple",
+          params: {
+            name: "state",
+            defaultValue: "a",
+            values: ["a", "b"],
+          },
         },
+        searchParams,
+        updateSearchParams,
       });
     });
 
-    const [_, setState] = result.current;
+    const firstResult = result.current;
 
     act(() => {
-      setState(["a", "b", "w"]);
+      firstResult.setState(["a", "b", "w"]);
     });
 
-    const [secondState] = result.current;
-    expect(mockedPushState).toBeCalledTimes(1);
-    expect(secondState.length).toEqual(2);
-    expect(secondState).toEqual(expect.arrayContaining(["a", "b"]));
+    const secondResult = result.current;
+
+    searchParams.set("state", ["a", "b"].toString());
+    expect(updateSearchParams).toBeCalledTimes(1);
+    expect(updateSearchParams).toBeCalledWith(searchParams);
+    expect(secondResult.state.value.length).toEqual(2);
+    expect(secondResult.state.value).toEqual(expect.arrayContaining(["a", "b"]));
   });
 
   it("set array value in type any", async () => {
+    const searchParams = new URLSearchParams({ some: "value" });
+
     const { result } = renderHook(() => {
       return useUrlState({
-        type: "any",
-        params: {
-          name: "state",
+        props: {
+          type: "any",
+          params: {
+            name: "state",
+          },
         },
+        searchParams,
+        updateSearchParams,
       });
     });
 
-    const [_, setState] = result.current;
+    const firstResult = result.current;
 
+    const newState = ["a", "b", "w"];
     act(() => {
-      setState(["a", "b", "w"]);
+      firstResult.setState(newState);
     });
 
-    const [secondState] = result.current;
-    expect(mockedPushState).toBeCalledTimes(1);
-    expect(secondState.length).toEqual(3);
-    expect(secondState).toEqual(expect.arrayContaining(["a", "b", "w"]));
+    const secondResult = result.current;
+    searchParams.set("state", newState.toString());
+    expect(updateSearchParams).toBeCalledTimes(1);
+    expect(updateSearchParams).toBeCalledWith(searchParams);
+    expect(secondResult.state.value.length).toEqual(3);
+    expect(secondResult.state.value).toEqual(expect.arrayContaining(newState));
   });
 });

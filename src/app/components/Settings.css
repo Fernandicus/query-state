@@ -1,0 +1,59 @@
+.color-btn {
+  background-color: #063045;
+  color: white;
+}
+
+.color-btn__default {
+  background-color: #e23232;
+  color: white;
+}
+
+.color-btn__lime--true {
+  background-color: lime;
+  color: black;
+}
+
+.color-btn__lime:hover {
+  background-color: rgb(0, 255, 0, 0.7);
+  color: black;
+}
+
+.color-btn__orange--true {
+  background-color: orange;
+  color: black;
+}
+
+.color-btn__orange:hover {
+  background-color: rgb(255, 165, 0, 0.7);
+  color: black;
+}
+
+.color-btn__teal--true {
+  background-color: teal;
+  color: black;
+}
+
+.color-btn__teal:hover {
+  background-color: rgb(0, 128, 128, 0.7);
+  color: black;
+}
+
+.color-btn__cornflowerblue--true {
+  background-color: cornflowerblue;
+  color: black;
+}
+
+.color-btn__cornflowerblue:hover {
+  background-color: rgb(100, 149, 237, 0.7);
+  color: black;
+}
+
+.color-btn__cornsilk--true {
+  background-color: cornsilk;
+  color: black;
+}
+
+.color-btn__cornsilk:hover {
+  background-color: rgb(255, 248, 220, 0.7);
+  color: black;
+}

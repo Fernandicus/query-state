@@ -9,20 +9,22 @@ type GetState<TId extends string, TValue extends string> = {
   get: (id: TId) => StateValue<TValue> | StateValue<TValue>[];
 };
 type Return<TId extends string, TValue extends string> = [GetState<TId, TValue>, SetState<TId, TValue>];
+type Props<TKey extends string, TId extends string, TValue extends string> = {
+  props: MultiBuildProps<TKey, TId, TValue>;
+  searchParams: URLSearchParams;
+  updateSearchParams(s: URLSearchParams): void;
+};
 
 export function useUrlMultiState<TKey extends string, TId extends string, TValue extends string>(
-  props: MultiBuildProps<TKey, TId, TValue>,
-  search?: URLSearchParams
+  properties: Props<TKey, TId, TValue>
 ): Return<TId, TValue> {
-  const [searchParams, setSearchParams] = useState(search && search.toString());
+  const { props, searchParams, updateSearchParams } = properties;
+
+  const [params, setSearchParams] = useState(searchParams);
 
   useEffect(() => {
-    if (search) {
-      setSearchParams(search.toString());
-    } else {
-      setSearchParams(location.search);
-    }
-  }, [search ?? location.search]);
+    setSearchParams(searchParams);
+  }, [searchParams]);
 
   const urlStateHandler = useMemo(() => {
     return URLStateHandler.buildMulti(props);
@@ -30,10 +32,15 @@ export function useUrlMultiState<TKey extends string, TId extends string, TValue
 
   const setState = useMemo(() => {
     return {
-      set(k: TId, v: TValue) {
-        const newState = urlStateHandler[k].setState(location.search, v);
-        window.history.pushState({}, "", "?" + newState);
-        setSearchParams(newState);
+      set(key: TId, value: TValue) {
+        const newState = urlStateHandler.setState({
+          searchParams: params,
+          key,
+          value,
+        });
+        const newSearchParams = new URLSearchParams(newState);
+        updateSearchParams(newSearchParams);
+        setSearchParams(newSearchParams);
       },
     };
   }, [urlStateHandler]);
@@ -41,10 +48,10 @@ export function useUrlMultiState<TKey extends string, TId extends string, TValue
   const getState = useMemo(() => {
     return {
       get(k: TId) {
-        return urlStateHandler[k].getState(searchParams);
+        return urlStateHandler.getState(params, k);
       },
     };
-  }, [searchParams, urlStateHandler]);
+  }, [params, urlStateHandler]);
 
   return [getState, setState];
 }

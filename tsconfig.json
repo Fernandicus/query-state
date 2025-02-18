@@ -7,10 +7,11 @@
     "moduleResolution": "Bundler", // important to avoid problems import files without .ts extension
     "outDir": "dist",
     "types": ["vitest/globals"]
+
     /* "paths": {
       "@/src/*: ["./src/*"]
     }*/
   },
-  "include": ["src/**/*", "__tests__/**/*"],
+  "include": ["src/**/*", "__tests__/**/*", "vite.config.json"],
   "exclude": ["dist", "node_modules"]
 }

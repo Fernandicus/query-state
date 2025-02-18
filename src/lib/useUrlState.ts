@@ -3,18 +3,25 @@ import { StateValue, UseUrlStateProps } from "./types";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { unhandledValue } from "./utils";
 
-type Return<T extends string> = [StateValue<T> | StateValue<T>[], (v: StateValue<T> | StateValue<T>[]) => void];
+type Return<T extends string> = {
+  state: {
+    value: StateValue<T> | StateValue<T>[];
+    is(v: T): boolean;
+  };
+  setState(v: StateValue<T> | StateValue<T>[]): void;
+};
+type Props<T extends string> = {
+  props: UseUrlStateProps<T>;
+  searchParams: URLSearchParams;
+  updateSearchParams(s: URLSearchParams): void;
+};
 
-export function useUrlState<T extends string>(props: UseUrlStateProps<T>, search?: URLSearchParams): Return<T> {
-  const [searchParams, setSearchParams] = useState(search && search.toString());
+export function useUrlState<T extends string>({ props, searchParams, updateSearchParams }: Props<T>): Return<T> {
+  const [params, setSearchParams] = useState(searchParams);
 
   useEffect(() => {
-    if (search) {
-      setSearchParams(search.toString());
-    } else {
-      setSearchParams(location.search);
-    }
-  }, [search ?? location.search]);
+    setSearchParams(searchParams);
+  }, [searchParams]);
 
   const urlStateHandler = useMemo(() => {
     const type = props.type;
@@ -37,18 +44,25 @@ export function useUrlState<T extends string>(props: UseUrlStateProps<T>, search
       default:
         throw unhandledValue(type);
     }
-  }, [props]);
+  }, []);
 
   const setState = useCallback(
     (v: StateValue<T> | StateValue<T>) => {
-      const newState = urlStateHandler.setState(location.search, v);
-      window.history.pushState({}, "", "?" + newState);
-      setSearchParams(newState);
+      const newState = urlStateHandler.setState(params, v);
+      const newSearchParams = new URLSearchParams(newState);
+      updateSearchParams(newSearchParams);
+      setSearchParams(newSearchParams);
     },
-    [urlStateHandler]
+    [params]
   );
 
-  const getState = urlStateHandler.getState(searchParams);
-
-  return [getState, setState];
+  return {
+    state: {
+      value: urlStateHandler.getState(params),
+      is(v: T) {
+        return this.value === v;
+      },
+    },
+    setState,
+  };
 }

@@ -1,17 +1,7 @@
 import { renderHook, act } from "@testing-library/react";
 import { useUrlMultiState } from "../src/lib/useUrlMultiState";
 
-const mockedPushState = vi.fn();
-
-vi.spyOn(window, "location", "get").mockReturnValue({
-  ...window.location,
-  search: "?some=query",
-});
-
-vi.spyOn(window, "history", "get").mockReturnValue({
-  ...window.history,
-  pushState: mockedPushState,
-});
+const updateSearchParams = vi.fn();
 
 describe("On useUrlMultiState", () => {
   afterEach(() => {
@@ -20,29 +10,34 @@ describe("On useUrlMultiState", () => {
 
   it("setState calls pushState and updates the state", async () => {
     const now = Date.now().toString();
+    const searchParams = new URLSearchParams();
     const { result } = renderHook(() => {
       return useUrlMultiState({
-        key: "table",
-        ids: {
-          sort: {
-            type: "simple",
-            params: {
-              defaultValue: "asc",
-              values: ["desc", "asc", "idle"],
+        searchParams,
+        updateSearchParams,
+        props: {
+          name: "table",
+          ids: {
+            sort: {
+              type: "simple",
+              params: {
+                defaultValue: "asc",
+                values: ["desc", "asc", "idle"],
+              },
             },
-          },
-          filter: {
-            type: "simple",
-            params: {
-              defaultValue: "john",
-              values: ["john", "doe"],
+            filter: {
+              type: "simple",
+              params: {
+                defaultValue: "john",
+                values: ["john", "doe"],
+              },
             },
-          },
-          from: {
-            type: "custom",
-            params: {
-              getState() {
-                return now;
+            from: {
+              type: "custom",
+              params: {
+                getState() {
+                  return now;
+                },
               },
             },
           },
@@ -58,28 +53,33 @@ describe("On useUrlMultiState", () => {
     });
 
     const [secondState] = result.current;
-    expect(mockedPushState).toBeCalledTimes(1);
+    expect(updateSearchParams).toBeCalledTimes(1);
     expect(secondState.get("filter")).toEqual("doe");
     expect(secondState.get("from")).toEqual(now);
   });
 
   it("setState calls pushState and updates the state", async () => {
+    const searchParams = new URLSearchParams();
     const { result } = renderHook(() => {
       return useUrlMultiState({
-        key: "table",
-        ids: {
-          sort: {
-            type: "simple",
-            params: {
-              defaultValue: "asc",
-              values: ["desc", "asc", "idle"],
+        searchParams,
+        updateSearchParams,
+        props: {
+          name: "table",
+          ids: {
+            sort: {
+              type: "simple",
+              params: {
+                defaultValue: "asc",
+                values: ["desc", "asc", "idle"],
+              },
             },
-          },
-          filter: {
-            type: "simple",
-            params: {
-              defaultValue: "",
-              values: ["john", "doe"] as string[],
+            filter: {
+              type: "simple",
+              params: {
+                defaultValue: "",
+                values: ["john", "doe"] as string[],
+              },
             },
           },
         },
@@ -93,7 +93,7 @@ describe("On useUrlMultiState", () => {
     });
 
     const [secondState] = result.current;
-    expect(mockedPushState).toBeCalledTimes(1);
+    expect(updateSearchParams).toBeCalledTimes(1);
     expect(secondState.get("filter")).toEqual("");
   });
 });

@@ -55,10 +55,4 @@ export class URLSearchParamsWrapper {
   toString() {
     return this.urlSearchParams.toString();
   }
-
-  private matchedValuesInArray(values: string, splitedQueryFound: string[]) {
-    const setOfValues = new Set(values);
-    const matchedValues = new Set(splitedQueryFound).intersection(setOfValues);
-    return Array.from(matchedValues);
-  }
 }
