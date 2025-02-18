@@ -45,17 +45,17 @@ describe("On useUrlMultiState", () => {
       });
     });
 
-    const [firstState, setState] = result.current;
-    expect(firstState.get("filter")).toEqual("john");
+    const { state, setState } = result.current;
+    expect(state.value("filter")).toEqual("john");
 
     act(() => {
-      setState.set("filter", "doe");
+      setState("filter", "doe");
     });
 
-    const [secondState] = result.current;
+    const secondResult = result.current;
     expect(updateSearchParams).toBeCalledTimes(1);
-    expect(secondState.get("filter")).toEqual("doe");
-    expect(secondState.get("from")).toEqual(now);
+    expect(secondResult.state.value("filter")).toEqual("doe");
+    expect(secondResult.state.value("from")).toEqual(now);
   });
 
   it("setState calls pushState and updates the state", async () => {
@@ -86,14 +86,15 @@ describe("On useUrlMultiState", () => {
       });
     });
 
-    const [_, setState] = result.current;
+    const { setState } = result.current;
 
     act(() => {
-      setState.set("filter", "");
+      setState("filter", "");
     });
 
-    const [secondState] = result.current;
+    const { state } = result.current;
     expect(updateSearchParams).toBeCalledTimes(1);
-    expect(secondState.get("filter")).toEqual("");
+    expect(state.value("filter")).toEqual("");
+    expect(state.is("filter", "")).toEqual(true);
   });
 });
