@@ -8,7 +8,7 @@ describe("On useUrlState", () => {
     vi.clearAllMocks();
   });
 
-  it.only("setState calls pushState and updates the state", async () => {
+  it("setState calls updateSearchParams and updates the state", async () => {
     const searchParams = new URLSearchParams({ some: "value" });
 
     const { result } = renderHook(() => {
