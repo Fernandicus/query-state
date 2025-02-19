@@ -1,11 +1,30 @@
-.query-params-container {
+.query-params__wrapper {
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.query-params__container {
+  border: 1px solid var(--color-placeholder);
   background-color: var(--color-surface);
   padding: 15px;
   border-radius: 5px;
+  cursor: default;
 }
 
-.query-params-container__empty {
+.query-params__container--empty {
   color: var(--color-placeholder);
+}
+
+.query-params__info {
+  background-color: rgba(230, 249, 255, 0.631);
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.query-params__info p {
+  color: var(--color-surface);
 }
 
 .btn {
