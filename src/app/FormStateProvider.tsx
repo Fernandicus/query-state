@@ -31,6 +31,8 @@ export function FormStateProvider({ children }: { children: JSX.Element }) {
   const shapes: Shape[] = ["box", "rounded"];
 
   const urlState = useUrlMultiState({
+    searchParams,
+    updateSearchParams: setSearchParams,
     props: {
       name: "input",
       ids: {
@@ -46,8 +48,6 @@ export function FormStateProvider({ children }: { children: JSX.Element }) {
         },
       },
     },
-    searchParams,
-    updateSearchParams: setSearchParams,
   });
 
   return (
