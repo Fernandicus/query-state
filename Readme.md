@@ -2,7 +2,25 @@
 
 ## 🚀 Introduction
 
-`query-state-hook` provides a simple and efficient way to store and validate your component state directly in the URL. This approach enhances usability, improves navigation, and simplifies state management without requiring external state management tools like Redux or Context API.
+`query-state-hook` provides a simple and efficient way to store and **validate** your component state directly in the URL. This approach enhances usability, improves navigation, and simplifies state management without requiring external state management tools like Redux or Context API.
+
+Storing the state in the URL gives users full control over your app’s state. Because of this, it’s essential to manage and validate that state carefully. This is the core reason for the existence of this library: to help you ensure the state follows your defined rules.
+
+### [Demo](https://fernandicus.github.io/query-state-hook/)
+
+## 📢 Important Note
+
+- **Main Objective:** This library is designed to simplify validation of URL query parameters, ensuring they adhere to your domain rules.
+
+- **Why It Matters:** It prevents users—or even you as the developer—from accidentally setting invalid values as the state of your query parameters
+
+- **Not a Replacement:** This library is meant to complement `useSearchParams()` from `react-router`, not replace it.
+
+### 📝 Practical Example
+
+Imagine you have a form with three checkboxes for color options: red, blue, and white. The form state is stored in the URL so it can be shared or persisted. However, what happens if a user manually changes the URL to include an invalid color, like black?
+
+Without validation, black would be stored as the state, which could cause issues. This library ensures only valid values—red, blue, or white—are allowed, making your app more reliable.
 
 ## 🎯 Benefits of Managing State Through the URL
 
@@ -47,18 +65,24 @@ Use the `useUrlState` hook to sync your component state with the URL.
 
 ```tsx
 export function SwitchButton() {
-  const [state, setState] = useUrlState({
-    type: "simple",
-    params: {
-      name: "switch-btn",
-      defaultValue: "off",
-      values: ["on", "off"],
+  const [searchParams, updateSearchParams] = useSearchParams();
+
+  const { state, setState, clean } = useUrlState({
+    searchParams,
+    updateSearchParams,
+    props: {
+      type: "simple",
+      params: {
+        name: "switch-btn",
+        defaultValue: "off",
+        values: ["on", "off"],
+      },
     },
   });
 
   return (
     <button
-      className={`btn btn--${state}`}
+      className={`btn btn--${state.value}`}
       onClick={() => {
         if (state === "on") {
           setState("off");
@@ -86,23 +110,29 @@ Define your own validation logic by setting `type: "custom"`.
 For example, validating a **year range**:
 
 ```tsx
+const [searchParams, updateSearchParams] = useSearchParams();
+
 const currentYear = new Date().getFullYear();
 const minYear = currentYear - 5;
 
-const [state, setState] = useUrlState({
-  type: "custom",
-  params: {
-    name: "year",
-    getState(urlSearchParams) {
-      const stateUrl = parseInt(urlSearchParams.get());
-      if (stateUrl < minYear || stateUrl > currentYear) return currentYear.toString();
-    },
-    setState(urlSearchParams, value) {
-      const year = parseInt(value);
-      if (year < minYear || year > currentYear) {
-        urlSearchParams.set(currentYear.toString());
-        return urlSearchParams;
-      }
+const { state, setState, clean } = useUrlState({
+  searchParams,
+  updateSearchParams,
+  props: {
+    type: "custom",
+    params: {
+      name: "year",
+      getState(urlSearchParams) {
+        const stateUrl = parseInt(urlSearchParams.get());
+        if (stateUrl < minYear || stateUrl > currentYear) return currentYear.toString();
+      },
+      setState(urlSearchParams, value) {
+        const year = parseInt(value);
+        if (year < minYear || year > currentYear) {
+          urlSearchParams.set(currentYear.toString());
+          return urlSearchParams;
+        }
+      },
     },
   },
 });
@@ -114,24 +144,28 @@ Sometimes, you need multiple states in a single URL, like for a form with multip
 Use `useUrlMultiState` to handle this scenario:
 
 ```tsx
-const [state, setState] = useUrlMultiState({
-  key: "form",
-  ids: {
-    name: {
-      type: "any",
-    },
-    age: {
-      type: "simple",
-      params: {
-        defaultValue: "under-age",
-        values: ["under-age", "adult"],
+const { state, setState, clean } = useUrlMultiState({
+  searchParams,
+  updateSearchParams,
+  props: {
+    key: "form",
+    ids: {
+      name: {
+        type: "any",
+      },
+      age: {
+        type: "simple",
+        params: {
+          defaultValue: "under-age",
+          values: ["under-age", "adult"],
+        },
       },
     },
   },
 });
 
-setState.set("name", "John Doe");
-setState.set("age", "under-age");
+setState("name", "John Doe");
+setState("age", "under-age");
 ```
 
 ## 📋 Managing Arrays in State
@@ -139,7 +173,7 @@ setState.set("age", "under-age");
 You can also store arrays in the URL:
 
 ```tsx
-const [state, setState] = useUrlMultiState({
+const { state, setState, clean } = useUrlMultiState({
   key: "form",
   ids: {
     food: {
@@ -152,7 +186,58 @@ const [state, setState] = useUrlMultiState({
   },
 });
 
-setState.set("food", ["mango", "pizza"]);
+setState("food", ["mango", "pizza"]);
+```
+
+## 📖 Centralize all your validations into a Provider
+
+You can use `useUrlMultiState` into your own Provider to centralize all your logic and to have access everywhere in your app
+
+```tsx
+const FormStateCtx = createContext<FormState>({
+  title: "",
+  shape: "",
+  setTitle() {},
+  setShape() {},
+});
+
+export const formContext = () => useContext(FormStateCtx);
+
+export function FormStateProvider({ children }: { children: JSX.Element }) {
+  const [searchParams, updateSearchParams] = useSearchParams();
+
+  const urlState = useUrlMultiState({
+    searchParams,
+    updateSearchParams,
+    props: {
+      ids: {
+        title: {
+          type: "any",
+        },
+        shape: {
+          type: "simple",
+          params: {
+            defaultValue: "box",
+            values: ["box", "rounded"],
+          },
+        },
+      },
+    },
+  });
+
+  return (
+    <FormStateCtx.Provider
+      value={{
+        shape: urlState.state.firstElement("shape"),
+        title: urlState.state.firstElement("title"),
+        setShape: (shape) => urlState.setState("shape", shape),
+        setTitle: (title) => urlState.setState("title", title),
+      }}
+    >
+      {children}
+    </FormStateCtx.Provider>
+  );
+}
 ```
 
 ## 📖 Server Components (e.g., NextJS)
@@ -161,8 +246,12 @@ When using server components—such as with Next.js—you might notice a slight 
 
 ```tsx
 const searchParams = useSearchParams();
-const [state, setState] = useUrlState(
-  {
+const { state, setState, clean } = useUrlState({
+  updateSearchParams: (queryParams) => {
+    window.history.pushState({}, "", "?" + queryParams.toString());
+  },
+  searchParams,
+  props: {
     type: "simple",
     params: {
       name: "switch-btn",
@@ -170,8 +259,7 @@ const [state, setState] = useUrlState(
       values: ["on", "off"],
     },
   },
-  searchParams
-);
+});
 ```
 
 This approach ensures smoother state hydration and avoids mismatches between server and client-rendered output.
