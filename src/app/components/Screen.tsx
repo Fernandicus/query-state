@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useMemo } from "react";
 import { useUrlSizeState } from "../hooks/useUrlSizeState";
 import { useUrlColorState } from "../hooks/useUrlColorsState";
 import { formContext } from "../FormStateProvider";
+import "./Screen.css";
 
 export function Screen() {
   const ctx = formContext();
@@ -11,71 +12,41 @@ export function Screen() {
   const { defaultColor, colorsState } = useUrlColorState();
 
   const size = useMemo(() => {
-    const size: Record<(typeof sizes)[number], string> = { xl: "70%", lg: "60%", md: "50%", sm: "40%", xs: "30%" };
+    const size: Record<(typeof sizes)[number], string> = { xl: "100%", lg: "80%", md: "60%", sm: "40%", xs: "20%" };
     return size[sizeState];
-  }, [sizeState]);
+  }, [sizeState, colorsState.value]);
 
   const color = useMemo(() => {
     const linearGradient = "linear-gradient(45deg,";
-    if (colorsState.isArray(colorsState.value)) {
+
+    if (colorsState.isArray(colorsState.value) && colorsState.value.length > 1) {
       const colors = colorsState.value.join(", ");
       return linearGradient.concat(`${colors})`);
     }
 
-    return linearGradient.concat(`${colorsState.value}, ${colorsState.value})`);
+    if (colorsState.value.length) {
+      return linearGradient.concat(`${colorsState.value}, ${colorsState.value})`);
+    }
+
+    return linearGradient.concat(`${defaultColor}, ${defaultColor})`);
   }, [colorsState.value]);
 
   return (
     <div
+      className="screen-wrapper"
       style={{
-        width: "100%",
-        display: "flex",
-        alignItems: "center",
+        width: size,
       }}
     >
+      <h2 className="screen-title"> {ctx.title.length ? ctx.title : "Title"}</h2>
       <div
+        className="screen"
         style={{
-          width: "100%",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center",
-          alignItems: "center",
-          padding: "50px",
+          background: color,
+          borderRadius: ctx.shape === "rounded" ? "100%" : "10px",
         }}
       >
-        <div
-          style={{
-            width: size,
-            height: "500px",
-            display: "flex",
-            flexDirection: "column",
-            gap: "10px",
-          }}
-        >
-          <h2 style={{ color: "white" }}> {ctx.title.length ? ctx.title : "Title"}</h2>
-          <div
-            style={{
-              background: color,
-              border: "1px solid #ffffff26",
-              width: "100%",
-              height: "100%",
-              borderRadius: "10px",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            {colorsState.is(defaultColor) && (
-              <h1
-                style={{
-                  color: "#ffffff26",
-                }}
-              >
-                No colors
-              </h1>
-            )}
-          </div>
-        </div>
+        {colorsState.is(defaultColor) && <h1 className="screen__empty-title">No colors</h1>}
       </div>
     </div>
   );

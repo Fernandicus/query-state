@@ -15,6 +15,7 @@ type Return<TId extends string, TValue extends string> = {
     has(id: TId, v: StateValue<TValue>): boolean;
     isArray(v: StateValue<TValue> | StateValue<TValue>[]): v is StateValue<TValue>[];
     firstElement(id: TId): StateValue<TValue>;
+    validateAll(): string;
   };
   setState(key: TId, value: StateValue<TValue> | StateValue<TValue>[]): void;
   clean(id: TId, v: StateValue<TValue> | StateValue<TValue>[] | "all"): void;
@@ -80,6 +81,9 @@ export function useUrlMultiState<TKey extends string, TId extends string, TValue
         const value = stateValue(id);
         if (isArray(value)) return value[0];
         return value;
+      },
+      validateAll() {
+        return urlStateHandler.getAll(searchParams);
       },
     },
     clean(id, deleteValue) {

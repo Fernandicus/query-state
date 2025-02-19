@@ -10,6 +10,8 @@ type FormState = {
   setTitle(title: string): void;
   setShape(shape: Shape): void;
   clean(shape: "title" | "shape"): void;
+  validate(): string;
+  shapes: Shape[];
 };
 
 const FormStateCtx = createContext<FormState>({
@@ -18,12 +20,15 @@ const FormStateCtx = createContext<FormState>({
   setTitle() {},
   setShape() {},
   clean() {},
+  validate: () => "",
+  shapes: [],
 });
 
 export const formContext = () => useContext(FormStateCtx);
 
 export function FormStateProvider({ children }: { children: JSX.Element }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const shapes: Shape[] = ["box", "rounded"];
 
   const urlState = useUrlMultiState({
     props: {
@@ -48,6 +53,7 @@ export function FormStateProvider({ children }: { children: JSX.Element }) {
   return (
     <FormStateCtx.Provider
       value={{
+        shapes,
         shape: urlState.state.firstElement("shape") as Shape,
         title: urlState.state.firstElement("title"),
         setShape(shape) {
@@ -58,6 +64,9 @@ export function FormStateProvider({ children }: { children: JSX.Element }) {
         },
         clean(t) {
           urlState.clean(t, "all");
+        },
+        validate() {
+          return urlState.state.validateAll();
         },
       }}
     >

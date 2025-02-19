@@ -1,0 +1,24 @@
+.screen-wrapper {
+  height: 500px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.screen-title {
+  color: white;
+  text-align: center;
+}
+
+.screen {
+  border: 1px solid var(--color-placeholder);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.screen__empty-title {
+  color: var(--color-placeholder);
+}

@@ -47,7 +47,7 @@ export class URLMultiStateHandler<
       const key = k as keyof typeof this.props.ids;
       const state = this.build(key).getState(searchParams);
       if (!state) return;
-      url.set(k, state.toString());
+      url.set(this.buildNameFromKey(key), state.toString());
     });
 
     return url.toString();
@@ -99,7 +99,6 @@ export class URLMultiStateHandler<
 
   private buildNameFromKey(key: string) {
     const name = this.props.name;
-    console.log(name ? `${name}.${key}` : key);
     return name ? `${name}.${key}` : key;
   }
 }

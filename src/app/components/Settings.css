@@ -1,9 +1,39 @@
+.query-params-container {
+  background-color: var(--color-surface);
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.query-params-container__empty {
+  color: var(--color-placeholder);
+}
+
+.btn {
+  border: none;
+  border-radius: 50px;
+  padding: 5px 15px;
+  color: white;
+  cursor: pointer;
+}
+
+.input {
+  border: none;
+  background-color: var(--color-surface);
+  color: white;
+  border-radius: 50px;
+  padding: 10px 20px;
+}
+
 .color-btn {
-  background-color: #063045;
+  background-color: var(--color-surface);
   color: white;
 }
 
-.color-btn__default {
+.color-btn__selected {
+  background-color: #00caff8a;
+}
+
+.color-btn__remove {
   background-color: #e23232;
   color: white;
 }

@@ -1,9 +1,11 @@
 :root {
-  --body-bg-color: #061720;
+  --color-body-bg: #061720;
+  --color-surface: #063045;
+  --color-placeholder: #ffffff26;
 }
 
 html {
-  background-color: var(--body-bg-color);
+  background-color: var(--color-body-bg);
 }
 
 li {
@@ -19,6 +21,37 @@ p,
 span,
 a,
 label {
+  margin: 0;
   font-family: Arial, Helvetica, sans-serif;
   color: white;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+}
+
+.w-full {
+  width: 100%;
+}
+
+.flex {
+  display: flex;
+  gap: 10px;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.flex-space-around {
+  display: flex;
+  justify-content: space-around;
+}
+
+.flex-center {
+  display: flex;
+  justify-content: space-around;
 }
