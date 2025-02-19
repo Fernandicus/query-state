@@ -15,10 +15,9 @@ export function QueryParamsScreen() {
     return {
       colors: [colorsState.value].flat(),
       size: sizeState,
-      title: ctx.title,
-      shape: ctx.shape,
+      "input.title": ctx.title,
+      "input.shape": ctx.shape,
     };
-    // return [].flat().join(" , ");
   }, [colorsState.value, sizeState, ctx]);
 
   return (
@@ -63,12 +62,14 @@ export function QueryParamsScreen() {
       <div className="query-params__container">
         <p
           dangerouslySetInnerHTML={{
-            __html: Object.entries(validatedState).map(([k, v]) => {
-              if (Array.isArray(v)) {
-                return `${k} = [ ${v} ] `;
-              }
-              return `${k} = ${v} `;
-            }),
+            __html: Object.entries(validatedState)
+              .map(([k, v]) => {
+                if (Array.isArray(v)) {
+                  return `${k} = [ ${v.join(" , ")} ] `;
+                }
+                return `${k} = ${v} `;
+              })
+              .join("<br/><br/>"),
           }}
         ></p>
       </div>
