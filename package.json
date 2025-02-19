@@ -30,8 +30,10 @@
     "dev": "vite",
     "test": "vitest",
     "build": "vite build",
-    "predeploy": "npm run build",
-    "deploy": "gh-pages -d build"
+    "build:preview": "vite build --config vite.config.preview.ts",
+    "preview": "vite preview",
+    "predeploy": "npm run build:preview",
+    "deploy": "gh-pages -d dist"
   },
   "devDependencies": {
     "@testing-library/dom": "^10.4.0",
